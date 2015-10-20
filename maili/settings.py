@@ -82,11 +82,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'maili-test',
-        '''
-        User:
-        Password:
-        HOST: secret!!!
-        '''
+        'USER': 'root',
+        'PASSWORD': 'D0nt@D1nn3r',
+        'HOST': '121.40.158.110',
         'PORT': '3306'
     }
 }
