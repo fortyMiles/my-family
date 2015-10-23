@@ -5,7 +5,7 @@ from account import views
 
 urlpatterns = [
     url(r'login/', views.user_login, name='login'),
-    url(r'get-code/', views.get_verification_code, name='get-verification-code'),
+    url(r'captcha/', views.get_verification_code, name='get-verification-code'),
     url(r'register/', views.register, name='register'),
     #url(r'^get-code$', views.get_verification_code, name='get-vericifation-cod,
 #    url(r'^register$', views.register, name='register'),

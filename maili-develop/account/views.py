@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
 from account.models import User
+from rest_framework.renderers import JSONRenderer
+import json
+from account.utility import send_message
 # Create your views here.
 
 POST = 'POST'
@@ -18,25 +21,36 @@ GET = 'GET'
 def user_login(request):
     """
     receives post request and login user.
+
+    args:
+
+        data: user login information
+        {
+        "phone":varchar(),
+        "password":md5_varchar()
+        }
+
+    return:
+
+    - code: *202*
+      message: information is correct, and user has login
+    - code: *401*
+      message: name or password error.
+
     ---
     parameters:
     - name: phone
-      description: user's name, send from request POST method.
+      description: user's phone number
       required: true
       type: string
       paramType: form
 
     - name: password
-      description: user's password, send from request POST method.
+      description: user's password
       required: true
       type: string
       paramType: form
 
-    responseMessage:
-    - code: 202
-      message: information is correct, and user has login
-    - code: 401
-      message: name or password error.
     """
     # import pdb; pdb.set_trace()
     if request.method == 'POST':
@@ -46,15 +60,28 @@ def user_login(request):
         if user_set:
         #    login(user_set[0])
             user_set[0].is_login = True
-            return Response({status.HTTP_202_ACCEPTED: 'logined'})
+            return Response({'status': status.HTTP_202_ACCEPTED})
         else:
-            return Response({status.HTTP_401_UNAUTHORIZED: 'failded'})
+            return Response({'status': status.HTTP_401_UNAUTHORIZED})
 
 
 @api_view([POST])
 def get_verification_code(request):
     """
     get a verification code from server.
+
+    args:
+
+        data: phoen number of user input.
+        {
+            "phone":varchar()
+        }
+
+    returns:
+
+    - staus
+    - code
+
     ---
     parameters:
     - name: phone
@@ -66,9 +93,18 @@ def get_verification_code(request):
 
     # phone = request.query_params['phone']
 
-    phone = request.data['phone']
-    code = phone[-6:]
-    context = {"code": code}
+    phone = (request.data['phone'])
+    code = send_message.random_code(phone)
+    success = send_message.send_message(phone, code)
+
+    context = {"status": None, "code:": None}
+
+    if success:
+        context['status'] = status.HTTP_200_OK
+        context['code'] = code
+    else:
+        context['status'] = status.HTTP_408_REQUEST_TIMEOUT
+
     return Response(context)
 
 
@@ -76,28 +112,68 @@ def get_verification_code(request):
 def register(request):
     """
     registers a new user account by phone number and password
+
+    args:
+
+        data: user register inforamtion
+        {
+            "firstName":varchar(),
+            "password":md5_varchar(),
+            "mobilePhone":varchar(),
+            "gender":varchar(),
+            "maritalStatus":varchar()
+        }
+
+    - returns:
+
+        HTTP status code: 200, login succeed
+
     ---
     parameters:
-        - name: phone
-          descirption: user phone number
+        - name: firstName
+          description: first name
           required: true
           type: string
           paramType: form
+
         - name: password
-          descirption: user's password
+          description: password
           required: true
           type: string
           paramType: form
+
+        - name: mobilePhone
+          description: phone number
+          required: true
+          type: string
+          paramType: form
+
+        - name: gender
+          description: gender
+          required: true
+          type: string
+          paramType: form
+
+        - name: maritalStatus
+          description: if married
+          required: true
+          type: string
+          paramType: form
+
     """
-    phone = request.data['phone']
-    password = request.data['password']
     try:
-        user = User(phone=phone, password=password)
+        firstName = request.data.get('firstName', 'TEST')# ['firstName']
+        password = request.data.get('password', 'password')
+        mobilePhone = request.data.get('mobilePhone', '12345678910')
+        gender = request.data.get('gender', 'F')
+        maritalStatus = request.data.get('maritalStatus', 'false')
+        user = User(phone=mobilePhone, password=password, first_name=firstName, gender=gender, marital_status=maritalStatus)
         user.save()
-        return Response({status.HTTP_200_OK: 'okay'})
+
+        return Response({'status': status.HTTP_201_CREATED})
     except Exception as e:
         print e
-        return Response({status.HTTP_409_CONFLICT: 'confilct'})
+        return Response({'status': status.HTTP_409_CONFLICT})
 
 
 
@@ -122,7 +198,7 @@ def get_verification_code(request):
         response = {"code": code}
         return Response(response)
     except Exception as e:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST})
 
 
 @api_view(['POST'])
@@ -131,10 +207,10 @@ def register(request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED})
         else:
-            return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST})
     except Exception as e:
         print e
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST})
 '''
