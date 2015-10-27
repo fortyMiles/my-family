@@ -55,7 +55,7 @@ class Relationship(models.Model):
         db_table = "relationship"
 
 
-class FriendShip(models.Model):
+class Friendship(models.Model):
     ''' 朋友，也即通讯录 '''
     user_id = models.UUIDField(db_index=True)  # 谁的通讯录
     friend_id = models.UUIDField()  # 朋友id

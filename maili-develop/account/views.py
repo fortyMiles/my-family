@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from django.contrib.auth import authenticate, login
@@ -8,6 +9,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
 from account.models import User
+from account.models import Relationship
+from account.models import Friendship
 from rest_framework.renderers import JSONRenderer
 import json
 from account.utility import send_message
@@ -175,6 +178,97 @@ def register(request):
         print e
         return Response({'status': status.HTTP_409_CONFLICT})
 
+
+
+@api_view([POST])
+def update_relation_list(request):
+    '''
+    Updates relationship list.
+
+
+    args:
+
+        data: relationship. Refine what's relation of user1 and user2.
+        for example, user1 is user2's mother, the realtion will be mother,
+        so the data will be {'user1':'someone', 'user2':'someone2', 'relation':'mother'},
+        if we exchange the user1's and user2's name, which to be {'user1':'someone2','user2':'someone', 'relation':'son'}
+
+        {
+        "user1":varchar(),
+        "user2":varchar(),
+        "relation":varchar()
+        }
+
+    return:
+
+    - *http 201*
+      message is corrent and user's relation has been created.
+
+    - *http 401*
+      some information is error. Relation has not been created.
+
+
+    ---
+    parameters:
+    - name: user1
+      descritpion: first user's account
+      required: true
+      type: string
+      parameType: form
+
+    - name: user2
+      descritpion: second user's account
+      required: true
+      type: string
+      parameType: form
+
+    - name: relation
+      descritpion: what's the relation from user1 to user2.
+      required: true
+      type: string
+      parameType: form
+    '''
+    try:
+        user1 = request.data.get('user1', 'TEST')
+        user2 = request.data.get('user2', 'TEST')
+        relation = request.data.get('relation', 'TEST')
+
+        from_user = User.objects.filter(phone=user1)
+        to_user = User.objects.filter(phone=user1)
+        if from_user and to_user:
+            from_user_id = from_user[0].id
+            to_user_id = to_user[0].id
+            relationship = Relationship(from_user_id=from_user_id, to_user_id=to_user_id, relation=relation)
+            relationship.save()
+
+            update_relation_list(user1, user2, relation)
+            update_relation_list(user2, user2, relation)
+
+            return Response({'status': status.HTTP_201_CREATED})
+    except Exception as e:
+        print e
+        return Response({'status': status.HTTP_400_BAD_REQUEST})
+
+
+def update_contract_list(username, to_user, relation):
+    user = User.objects.filter(phone=username)[0]
+    friend = User.objects.filter(phone=to_username)[0]
+
+    user_id = user.id
+    friend_id = friend.id
+
+    friend_name = friend.first_name
+    if friend.full_name:
+        friend_name = friend.full_name
+    if friend.nickname:
+        friend_name = friend.nickname
+
+    remark_name = friend_name
+    first_char = 'T'
+    remark_tags = u'亲属'
+    
+    friend = Friendship(user_id=user_id, friend_id=friend_id, friend_name=friend_name, remark_name=remark_name, first_char=first_char, remark_tag=remark_tags)
+    friend.save()
 
 
 class UserViewSet(viewsets.ModelViewSet):
