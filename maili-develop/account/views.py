@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
+# -*- coding:utf-8 -*-
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from django.contrib.auth import authenticate, login
 from account.serializers import UserSerializer
+from account.serializers import FriendshipSerializer
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -241,8 +242,8 @@ def update_relation_list(request):
             relationship = Relationship(from_user_id=from_user_id, to_user_id=to_user_id, relation=relation)
             relationship.save()
 
-            update_relation_list(user1, user2, relation)
-            update_relation_list(user2, user2, relation)
+            update_contract_list(user1, user2, relation)
+            update_contract_list(user2, user1, relation)
 
             return Response({'status': status.HTTP_201_CREATED})
     except Exception as e:
@@ -250,9 +251,10 @@ def update_relation_list(request):
         return Response({'status': status.HTTP_400_BAD_REQUEST})
 
 
+
 def update_contract_list(username, to_user, relation):
     user = User.objects.filter(phone=username)[0]
-    friend = User.objects.filter(phone=to_username)[0]
+    friend = User.objects.filter(phone=to_user)[0]
 
     user_id = user.id
     friend_id = friend.id
@@ -265,46 +267,29 @@ def update_contract_list(username, to_user, relation):
 
     remark_name = friend_name
     first_char = 'T'
-    remark_tags = u'亲属'
+    remark_tags = '亲属'
     
-    friend = Friendship(user_id=user_id, friend_id=friend_id, friend_name=friend_name, remark_name=remark_name, first_char=first_char, remark_tag=remark_tags)
+    friend = Friendship(user_id=user_id, friend_id=friend_id, friend_phone=to_user, friend_name=friend_name, remark_name=remark_name, first_char=first_char, remark_tags=remark_tags)
     friend.save()
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    Get method, to get a user information;
-    POST method, to create a user, which means, created a new user.
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
-'''
-@api_view(['POST'])
-def get_verification_code(request):
+@api_view([GET])
+def contract(request, name):
     """
-    get a verifcation code from server.
+    Gets one person's all friends in his/her contract.
     """
-    import pdb; pdb.set_trace()  # XXX BREAKPOINT
-    try:
-        phone = request.data["phone"]
-        code = phone[-6:]
-        response = {"code": code}
-        return Response(response)
-    except Exception as e:
-        return Response(status=status.HTTP_400_BAD_REQUEST})
+    if request.method == GET:
+        try:
+            user = User.objects.filter(phone=name)
+            user_id = user[0].id
+            friends = Friendship.objects.filter(user_id=user_id)
+            serializer = FriendshipSerializer(friends, many=True)
+            return Response({'status': status.HTTP_200_OK, 'data': serializer.data})
+        except Exception as e:
+            print e
+            return Response({'status': status.HTTP_400_BAD_REQUEST})
+    
 
 
-@api_view(['POST'])
-def register(request):
-    try:
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED})
-        else:
-            return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST})
-    except Exception as e:
-        print e
-        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST})
-'''
+
