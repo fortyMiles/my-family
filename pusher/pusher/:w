@@ -1,0 +1,141 @@
+/*
+ * Change server to oop, test its correctness
+ * Author: Minchiuan Gao <minchiuan.gao@gmail.com>
+ * Date: 2015-Oct-23
+ */
+
+function MainServer(port){
+	var io = require('socket.io'),
+		events = new require('./configration/status.js');
+
+	var e = new events(),
+		User = require('./utility/user_handler.js');
+
+	var Message = message('./configration/message.js'),
+		m = new Message();
+
+	this.io_server = io.listen(port);
+	this.socket = null;
+
+	this.test = function(){
+		console.info('test');
+	};
+
+	this.login_handler = function(msg){
+		/*
+		 * to handle login events.
+		 * To notice a user had logined.
+		 * ---- 
+		 * args:
+		 *	 msg: {'name': varchar()};
+		 *	 the message that server send.
+		 */
+		msg = JSON.parse(msg);
+		var user_name = msg.name.trim();
+
+		user = new User(username, socket, socket_id);
+		user.add_a_login_user();
+
+		if(user.have_unread_message()){
+			var unread_messages = user.get_unread_message();
+
+			for(var index = 0; index < unread_messages.length; index++){
+				this.socket.emit(e.CHAE_MESSAGE, unread_messages[index]);
+			}
+
+			/* !!! notice, need to add a receive confire from client, it's just test code */
+			user.delete_unread_message();
+		}
+	};
+
+	this.chat_handler = function(msg){
+		/*
+		 * To handle chat events.
+		 * Router each message to its desitination.
+		 */
+
+		msg = JSON.parse(msg);
+		var sender = msg.sender.trim();
+		var receiver = msg.receiver.trim();
+
+		// check if is group chatting. 
+		// this version without group chatting function.
+
+		this.send_message(sender, receier, msg, e.CHAT_MESSAGE, E.SEND_TO_RECEIVER);
+	};
+
+	this.send_message = function(sender, receiver, msg, send_event, feedback_events){
+		/* sends a message from sender to receiver.
+		 * 
+		 * args:
+		 *	sender: sender's account name
+		 *	receiver: receiver's account name
+		 *	message: message content
+		 *	send_event: which events neeed send to receiver, such as 'chat message', 'invitation', etc
+		 *	feedback_events: which events when send success give back to sender.
+		 *
+		 */
+
+		if(User.is_login(sender) && User.is_login(receiver)){
+				var destination_socket = User.get_socket_by_name(receiver);
+				destination_socket.emit(send_event, msg); // router the message to the receiver;
+				var sender_socket = User.get_socket_by_name(sender);
+				sender_socke.emit(feedback_events, m.SEND_TO_RECEIER);
+		}else{
+			if(!User.is_login(sender)){
+				console.log('user not login');
+			}
+			// add message to a receiver's unread message.
+			if(!User.is_login(receiver)){
+				User.add_one_read_message(receiver, msg);
+			}
+		}
+	};
+
+	this.invitation = function(msg){
+		// invite one person to one's home;
+		// after invite, this person could see all the family member of invitor.
+		msg = JSON.parse(msg);
+		var sender = msg.sender.trim();
+		var receiver = msg.receiver.trim();
+
+		if(User.is_registerred(receiver)){
+			this.send_message(sender, receiver, msg, e.INTIVATION, e.SEND_TO_RECEIVER);
+		}else{
+			User.send_invitation_phone_text(receiver, function(){
+				var sender_socket = User.get_socket_by_name(sender);
+				sender_socke.emit(e.SEND_TO_RECEIVER, m.SEND_TO_RECEIER);
+			});
+		}
+	};
+
+	this.events_handler = function(socket){
+		/*
+		 * To maniputlate socket's differect events.
+		 */
+		console.info('a new client connects you, ( id == ' + socket.id + ' )');
+
+		this.socket = socket;
+
+		/*
+		socket.on(e.LOGIN, login_handler);
+		socket.on(e.CHAT_MESSAGE, change_message_handler);
+		socket.on(e.INVITATION, invitation_handler);
+		socket.on(e.DISCONNECT, disconnect_handler);
+		*/
+	};
+
+	this.run = function(){
+		/* 
+		 * run a new process to handle connection.
+		 */
+		console.info('server start');
+		this.io_server.on(e.CONNECTION, this.events_handler);
+	};
+
+}
+
+var server = new MainServer(3000);
+server.test();
+server.run();
+

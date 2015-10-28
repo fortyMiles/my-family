@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<script src='/socket.io/socket.io.js'></script>
+		<script src='/static/send_message.js'></script>
+		<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+	</head>
+
+	<form action="">
+		Receiver name:<br>
+		<input type="text" name="receiver">
+		<br>
+		Message: <br>
+		<input type="text" name="message">
+		<br>	
+		You are:<br>
+		<input type="text" name="sender">
+	</form>
+</html>

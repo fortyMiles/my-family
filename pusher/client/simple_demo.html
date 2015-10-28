@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<script src='/socket.io/socket.io.js'></script>
+		<script src='/static/send_message.js'></script>
+		<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+	</head>
+	<script>
+		$('form').submit(function(){
+			$('#users').append($('<li>')).text('you send a message');
+		});
+	</script>
+
+	<form action="">
+		Receiver name:<br>
+		<div id="checkboxes">
+			<input type="checkbox" name="uses" value="none">There is no user<br>
+		</div>
+		<br>
+		Message: <br>
+		<input type="text" name="message">
+		Send I'm XXX to register.
+		<br>	
+		You are:<br>
+		<input type="text" name="sender">
+		<input type="submit" value="Send">
+	</form>
+	<ul id = "message-block"><ul>
+</html>
