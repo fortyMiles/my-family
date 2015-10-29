@@ -298,8 +298,37 @@ class Avator(APIView):
     saves avator and gets person's avator.
     """
     def get(self, request, user_name):
-        pass
+        '''
+        gets one's avator url.
+
+        returns:
+
+            {'status': HTTP sattus, 'url': avator's url}
+        '''
+        user_set = User.objects.filter(phone=user_name)
+        photo_url = None
+        if user_set:
+            user = user_set[0]
+            photo_url = user.avator
+            return Response({'status': status.HTTP_200_OK, 'url': photo_url})
+        else:
+            return Response({'status': status.HTTP_404_NOT_FOUND})
 
     def post(self, requestm, user_name):
-        pass
+        '''
+        updates one person's avator.
 
+        datas:
+
+            {'photo':binary_data}
+
+        returns:
+
+            https status
+        ----
+        parameters:
+        - name: photo
+          description: user's new avator
+          type: file
+        '''
+        pass
