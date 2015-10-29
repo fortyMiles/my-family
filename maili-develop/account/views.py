@@ -15,6 +15,7 @@ from account.models import Friendship
 from rest_framework.renderers import JSONRenderer
 import json
 from account.utility import send_message
+from account.utility import send_binary
 # Create your views here.
 
 POST = 'POST'
@@ -313,7 +314,7 @@ class Avator(APIView):
         else:
             return Response({'status': status.HTTP_404_NOT_FOUND})
 
-    def post(self, requestm, user_name):
+    def post(self, request, user_name):
         """
         updates one person's avator.
 
@@ -323,7 +324,11 @@ class Avator(APIView):
 
         returns:
 
-            https status
+            {
+            'status':https status,
+            'url': phote_url
+            }
+
 
         ---
         parameters:
@@ -334,4 +339,16 @@ class Avator(APIView):
         parameType: form
         """
 
-        user = User.object.filter(phone=user_name)
+        user_set = User.object.filter(phone=user_name)
+        binary_data = request.data.get('photo', None)
+
+        if user_set and binary_data:
+            photo_url = send_binary.FileSender.send_file(binary_data)
+            user = user_set[0]
+            user.avator = photo_url
+            user.save()
+            return Response({'status': status.HTTP_202_ACCEPTED, 'url': photo_url})
+        elif not user_set:
+            return Response({'status': status.HTTP_404_NOT_FOUND})
+        else:
+            return Response({'status': status.HTTP_400_BAD_REQUEST})
