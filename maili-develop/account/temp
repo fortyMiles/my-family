@@ -1,0 +1,16 @@
+
+    ''' 朋友，也即通讯录 '''
+    user_id 
+    friend_id 
+    friend_name 
+    friend_phone 
+    remark_name 
+    first_char 
+    remark_tags 
+    send_msg_count 
+    receive_msg_count 
+    unread_msgs 
+    deleted 
+
+
+
