@@ -330,7 +330,7 @@ class Avator(APIView):
         - name: photo
         descritpion: phote's binary data
         required: true
-        type: file
+        type: binary
         parameType: form
         """
         pass
