@@ -292,7 +292,6 @@ def contract(request, name):
             return Response({'status': status.HTTP_400_BAD_REQUEST})
 
 
-@api_view([GET, POST])
 class Avator(APIView):
     """
     saves avator and gets person's avator.
@@ -315,7 +314,7 @@ class Avator(APIView):
             return Response({'status': status.HTTP_404_NOT_FOUND})
 
     def post(self, requestm, user_name):
-        '''
+        """
         updates one person's avator.
 
         datas:
@@ -325,10 +324,13 @@ class Avator(APIView):
         returns:
 
             https status
-        ----
+
+        ---
         parameters:
         - name: photo
-          description: user's new avator
-          type: file
-        '''
+        descritpion: phote's binary data
+        required: true
+        type: file
+        parameType: form
+        """
         pass

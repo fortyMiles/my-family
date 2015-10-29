@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'register/', views.register, name='register'),
     url(r'relation/', views.update_relation_list, name='relation'),
     url(r'contract/(?P<name>[a-z0-9]+)/', views.contract, name='contract'),
-    url(r'avator/(?P<user_name[a-z0-9]+>)', views.Avator.as_view(), name='avator'),
+    url(r'avator/(?P<user_name>[a-z0-9]+)', views.Avator.as_view(), name='avator'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
