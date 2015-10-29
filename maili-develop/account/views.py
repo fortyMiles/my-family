@@ -333,4 +333,5 @@ class Avator(APIView):
         type: binary
         parameType: form
         """
-        pass
+
+        user = User.object.filter(phone=user_name)
