@@ -180,7 +180,6 @@ def register(request):
         return Response({'status': status.HTTP_409_CONFLICT})
 
 
-
 @api_view([POST])
 def update_relation_list(request):
     '''
@@ -268,10 +267,12 @@ def update_contract_list(username, to_user, relation):
     remark_name = friend_name
     first_char = 'T'
     remark_tags = '亲属'
-    
-    friend = Friendship(user_id=user_id, friend_id=friend_id, friend_phone=to_user, friend_name=friend_name, remark_name=remark_name, first_char=first_char, remark_tags=remark_tags)
+    friend = Friendship(
+        user_id=user_id, friend_id=friend_id,
+        friend_phone=to_user, friend_name=friend_name,
+        remark_name=remark_name, first_char=first_char,
+        remark_tags=remark_tags)
     friend.save()
-
 
 
 @api_view([GET])
@@ -289,7 +290,16 @@ def contract(request, name):
         except Exception as e:
             print e
             return Response({'status': status.HTTP_400_BAD_REQUEST})
-    
 
 
+@api_view([GET, POST])
+class Avator(APIView):
+    """
+    saves avator and gets person's avator.
+    """
+    def get(self, request, user_name):
+        pass
+
+    def post(self, requestm, user_name):
+        pass
 
