@@ -228,11 +228,18 @@ def update_relation_list(request):
       required: true
       type: string
       parameType: form
+
+    - name: nickname
+      descritpion: what nickname user1 called user2
+      type: string
+      parameType: form
+
     '''
     try:
         user1 = request.data.get('user1', 'TEST')
         user2 = request.data.get('user2', 'TEST')
         relation = request.data.get('relation', 'TEST')
+        nickname = request.data.get('nickname', 'TEST')
 
         from_user = User.objects.filter(phone=user1)
         to_user = User.objects.filter(phone=user1)
@@ -242,8 +249,8 @@ def update_relation_list(request):
             relationship = Relationship(from_user_id=from_user_id, to_user_id=to_user_id, relation=relation)
             relationship.save()
 
-            update_contract_list(user1, user2, relation)
-            update_contract_list(user2, user1, relation)
+            update_contract_list(user1, user2, relation, nickname)
+            update_contract_list(user2, user1, relation, from_user.first_name)
 
             return Response({'status': status.HTTP_201_CREATED})
     except Exception as e:
@@ -252,7 +259,7 @@ def update_relation_list(request):
 
 
 
-def update_contract_list(username, to_user, relation):
+def update_contract_list(username, to_user, relation, remark_name):
     user = User.objects.filter(phone=username)[0]
     friend = User.objects.filter(phone=to_user)[0]
 
@@ -265,7 +272,6 @@ def update_contract_list(username, to_user, relation):
     if friend.nickname:
         friend_name = friend.nickname
 
-    remark_name = friend_name
     first_char = 'T'
     remark_tags = '亲属'
     friend = Friendship(
