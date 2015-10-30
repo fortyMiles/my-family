@@ -235,6 +235,8 @@ def update_relation_list(request):
       parameType: form
 
     '''
+    import pdb; pdb.set_trace()
+
     try:
         user1 = request.data.get('user1', 'TEST')
         user2 = request.data.get('user2', 'TEST')
@@ -250,7 +252,7 @@ def update_relation_list(request):
             relationship.save()
 
             update_contract_list(user1, user2, relation, nickname)
-            update_contract_list(user2, user1, relation, from_user.first_name)
+            update_contract_list(user2, user1, relation, from_user[0].first_name)
 
             return Response({'status': status.HTTP_201_CREATED})
     except Exception as e:
