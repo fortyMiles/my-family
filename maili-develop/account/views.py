@@ -235,7 +235,7 @@ def update_relation_list(request):
       parameType: form
 
     '''
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
 
     try:
         user1 = request.data.get('user1', 'TEST')
