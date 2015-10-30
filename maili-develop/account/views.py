@@ -273,7 +273,7 @@ def update_contract_list(username, to_user, relation, remark_name):
         friend_name = friend.nickname
 
     first_char = 'T'
-    remark_tags = '亲属'
+    remark_tags = relation
     friend = Friendship(
         user_id=user_id, friend_id=friend_id,
         friend_phone=to_user, friend_name=friend_name,
