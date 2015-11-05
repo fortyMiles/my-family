@@ -103,7 +103,7 @@ def get_verification_code(request):
     code = send_message.random_code(phone)
     success = send_message.send_message(phone, code)
 
-    context = {"status": None, "code:": None}
+    context = {"status": None, "code": None}
 
     if success:
         context['status'] = status.HTTP_200_OK
