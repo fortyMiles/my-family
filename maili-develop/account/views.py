@@ -168,7 +168,7 @@ def register(request):
 
     """
     try:
-        firstName = request.data.get('firstName', 'TEST')# ['firstName']
+        firstName = request.data.get('familyname', 'TEST')# ['firstName']
         password = request.data.get('password', 'password')
         mobilePhone = request.data.get('mobilePhone', '12345678910')
         gender = request.data.get('gender', 'F')
