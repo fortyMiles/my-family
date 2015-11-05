@@ -20,6 +20,7 @@ from account.utility import send_binary
 
 POST = 'POST'
 GET = 'GET'
+PUT = 'PUT'
 
 
 @api_view([POST])
@@ -113,7 +114,7 @@ def get_verification_code(request):
     return Response(context)
 
 
-@api_view([POST])
+@api_view([POST, PUT])
 def register(request):
     """
     registers a new user account by phone number and password
