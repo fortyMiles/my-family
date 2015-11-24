@@ -1,21 +1,18 @@
 # -*- coding:utf-8 -*-
 from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
-from django.contrib.auth import authenticate, login
-from account.serializers import UserSerializer
-from account.serializers import FriendshipSerializer
-from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import viewsets
 from account.models import User
 from account.models import Relationship
 from account.models import Friendship
-from rest_framework.renderers import JSONRenderer
-import json
 from account.utility import send_message
 from account.utility import send_binary
+from account.serializers import FriendshipSerializer
+from .service import user_exist
+from .service import update_user
+from .service import create_new_user
+
 # Create your views here.
 
 POST = 'POST'
@@ -64,7 +61,6 @@ def user_login(request):
         password = request.data['password']
         user_set = User.objects.filter(phone=phone).filter(password=password)
         if user_set:
-        #    login(user_set[0])
             user_set[0].is_login = True
             return Response({'status': status.HTTP_202_ACCEPTED})
         else:
@@ -114,8 +110,24 @@ def get_verification_code(request):
     return Response(context)
 
 
-@api_view([POST, PUT])
-def register(request):
+@api_view([GET])
+def test_exist(request, name):
+    """
+    Test a user if is register already.
+
+    - returns:
+
+        {'exist': Boolean}
+
+    """
+    exist = user_exist(name)
+    if exist:
+        return Response({'exist': True})
+    else:
+        return Response({'exist': False})
+
+
+class account(APIView):
     """
     registers a new user account by phone number and password
 
@@ -123,11 +135,11 @@ def register(request):
 
         data: user register inforamtion
         {
-            "firstName":varchar(),
-            "password":md5_varchar(),
-            "mobilePhone":varchar(),
-            "gender":varchar(),
-            "maritalStatus":varchar()
+        "phone":varchar(),
+        "password":md5_varchar(),
+        "first_name":varchar(),
+        "gender":varchar(),
+        "marital_status":varchar()
         }
 
     - returns:
@@ -136,50 +148,52 @@ def register(request):
 
     ---
     parameters:
-        - name: firstName
-          description: first name
-          required: true
-          type: string
-          paramType: form
+    - name: firstName
+      description: first name
+      required: false
+      type: string
+      paramType: form
 
-        - name: password
-          description: password
-          required: true
-          type: string
-          paramType: form
+    - name: password
+      description: password
+      required: false
+      type: string
+      paramType: form
 
-        - name: mobilePhone
-          description: phone number
-          required: true
-          type: string
-          paramType: form
+    - name: phone
+      description: phone number
+      required: true
+      type: string
+      paramType: form
 
-        - name: gender
-          description: gender
-          required: true
-          type: string
-          paramType: form
+    - name: gender
+      description: gender
+      required: false
+      type: string
+      paramType: form
 
-        - name: maritalStatus
-          description: if married
-          required: true
-          type: string
-          paramType: form
+    - name: maritalStatus
+      description: if married
+      required: false
+      type: string
+      paramType: form
 
     """
-    try:
-        firstName = request.data.get('familyname', 'TEST')# ['firstName']
-        password = request.data.get('password', 'password')
-        mobilePhone = request.data.get('mobilePhone', '12345678910')
-        gender = request.data.get('gender', 'F')
-        maritalStatus = request.data.get('maritalStatus', 'false')
-        user = User(phone=mobilePhone, password=password, first_name=firstName, gender=gender, marital_status=maritalStatus)
-        user.save()
+    def post(self, request):
+        try:
+            create_new_user(data=request.data)
+            return Response({'status': '202'})
+        except Exception as e:
+            print e
+            return Response({'status': '407'})
 
-        return Response({'status': status.HTTP_201_CREATED})
-    except Exception as e:
-        print e
-        return Response({'status': status.HTTP_409_CONFLICT})
+    def put(self, request):
+        try:
+            update_user(data=request.data)
+            return Response({'status': '202'})
+        except Exception as e:
+            print e
+            return Response({'status': '407'})
 
 
 @api_view([POST])
@@ -190,10 +204,12 @@ def update_relation_list(request):
 
     args:
 
-        data: relationship. Refine what's relation of user1 and user2.
+        data: relationship. Redefine what's relation of user1 and user2.
         for example, user1 is user2's mother, the realtion will be mother,
-        so the data will be {'user1':'someone', 'user2':'someone2', 'relation':'mother'},
-        if we exchange the user1's and user2's name, which to be {'user1':'someone2','user2':'someone', 'relation':'son'}
+        so the data will be {'user1':'someone', 'user2':'someone2',
+        'relation':'mother'},
+        if we exchange the user1's and user2's name, which to be
+        {'user1':'someone2','user2':'someone', 'relation':'son'}
 
         {
         "user1":varchar(),
@@ -204,14 +220,15 @@ def update_relation_list(request):
     return:
 
     - *http 201*
-      message is corrent and user's relation has been created.
+    message is corrent and user's relation has been created.
 
     - *http 401*
-      some information is error. Relation has not been created.
+    some information is error. Relation has not been created.
 
 
     ---
     parameters:
+
     - name: user1
       descritpion: first user's account
       required: true
@@ -249,17 +266,20 @@ def update_relation_list(request):
         if from_user and to_user:
             from_user_id = from_user[0].id
             to_user_id = to_user[0].id
-            relationship = Relationship(from_user_id=from_user_id, to_user_id=to_user_id, relation=relation)
+            relationship = Relationship(
+                from_user_id=from_user_id,
+                to_user_id=to_user_id,
+                relation=relation)
             relationship.save()
 
             update_contract_list(user1, user2, relation, nickname)
-            update_contract_list(user2, user1, relation, from_user[0].first_name)
+            update_contract_list(user2, user1, relation,
+                                 from_user[0].first_name)
 
             return Response({'status': status.HTTP_201_CREATED})
     except Exception as e:
         print e
         return Response({'status': status.HTTP_400_BAD_REQUEST})
-
 
 
 def update_contract_list(username, to_user, relation, remark_name):
@@ -296,7 +316,8 @@ def contract(request, name):
             user_id = user[0].id
             friends = Friendship.objects.filter(user_id=user_id)
             serializer = FriendshipSerializer(friends, many=True)
-            return Response({'status': status.HTTP_200_OK, 'data': serializer.data})
+            return Response({'status': status.HTTP_200_OK,
+                             'data': serializer.data})
         except Exception as e:
             print e
             return Response({'status': status.HTTP_400_BAD_REQUEST})
@@ -342,10 +363,10 @@ class Avator(APIView):
         ---
         parameters:
         - name: photo
-        descritpion: phote's binary data
-        required: true
-        type: binary
-        parameType: form
+          descritpion: phote's binary data
+          required: true
+          type: binary
+          parameType: form
         """
 
         user_set = User.object.filter(phone=user_name)
@@ -356,7 +377,9 @@ class Avator(APIView):
             user = user_set[0]
             user.avator = photo_url
             user.save()
-            return Response({'status': status.HTTP_202_ACCEPTED, 'url': photo_url})
+            return Response(
+                {'status': status.HTTP_202_ACCEPTED, 'url': photo_url}
+            )
         elif not user_set:
             return Response({'status': status.HTTP_404_NOT_FOUND})
         else:

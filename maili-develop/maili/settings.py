@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -38,10 +39,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-#    'apps.account',
     'group',
     'account',
     'rest_framework_swagger',
+    'feed',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -79,17 +80,29 @@ WSGI_APPLICATION = 'maili.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'maili-test',
-        'USER': 'root',
-        'PASSWORD': 'D0nt@D1nn3r',
-        'HOST': '121.40.158.110',
-        'PORT': '3306'
-    }
+default_db = {
+    'ENGINE': 'django.db.backend.mysql',
+    'NAME': 'maili-test',
+    'USER': 'root',
+    'PASSWORD': 'D0nt@D1nn3r',
+    'HOST': '121.40.158.110',
+    'PORT': '3306'
 }
 
+test_db = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': 'test_db'
+}
+
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': test_db
+    }
+else:
+    DATABASES = {
+        'default': default_db
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

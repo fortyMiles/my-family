@@ -85,12 +85,16 @@ class Member(APIView):
 
         returns:
 
-            {
-            groups:{name:'group_name1'},
+            {"status":http_status,
+             "data":[
+              {"group":"77414593144741054108"},
+              {"group":"77414593144741054674"},
+              {"group":"77414593144741055379"}
+              ]
             }
         '''
 
-        import pdb; pdb.set_trace();
+        # import pdb; pdb.set_trace();
         try:
             results = get_member_joined_groups(name)
             return Response({'status': status.HTTP_200_OK, 'data': results})
