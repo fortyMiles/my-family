@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'maili.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 default_db = {
-    'ENGINE': 'django.db.backend.mysql',
+    'ENGINE': 'django.db.backends.mysql',
     'NAME': 'maili-test',
     'USER': 'root',
     'PASSWORD': 'D0nt@D1nn3r',
@@ -126,4 +126,26 @@ STATIC_URL = '/static/'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
     'PAGE_SIZE': 10
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'django': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/error.log'),
+            'maxBytes': '16777216',  # 16megabytes
+            'formatter': 'verbose'
+        }
+    }
 }

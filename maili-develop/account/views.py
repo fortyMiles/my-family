@@ -12,6 +12,7 @@ from account.serializers import FriendshipSerializer
 from .service import user_exist
 from .service import update_user
 from .service import create_new_user
+from .service import get_user_info
 
 # Create your views here.
 
@@ -127,59 +128,77 @@ def test_exist(request, name):
         return Response({'exist': False})
 
 
-class account(APIView):
+@api_view([GET])
+def get_user(request, username):
     """
-    registers a new user account by phone number and password
+    Gets a user's information.
+    return:
 
-    args:
-
-        data: user register inforamtion
         {
-        "phone":varchar(),
+            status: HTTP status,
+            name: string,
+            gender: string,
+            marital_status: string,
+            first_name: string
+        }
+    """
+    import pdb; pdb.set_trace()
+    return Response(get_user_info(username))
+
+
+class UserAccount(APIView):
+    """
+    Creates or updates a user.
+
+    data:
+
+        {
+        "phone":varchar(), // require: True
         "password":md5_varchar(),
         "first_name":varchar(),
         "gender":varchar(),
         "marital_status":varchar()
         }
 
-    - returns:
-
-        HTTP status code: 200, login succeed
-
-    ---
-    parameters:
-    - name: firstName
-      description: first name
-      required: false
-      type: string
-      paramType: form
-
-    - name: password
-      description: password
-      required: false
-      type: string
-      paramType: form
-
-    - name: phone
-      description: phone number
-      required: true
-      type: string
-      paramType: form
-
-    - name: gender
-      description: gender
-      required: false
-      type: string
-      paramType: form
-
-    - name: maritalStatus
-      description: if married
-      required: false
-      type: string
-      paramType: form
-
     """
+
     def post(self, request):
+        """
+        Create a new user.
+
+        ---
+        parameters:
+        - name: first_name
+          description: first name
+          required: false
+          type: string
+          paramType: form
+
+        - name: password
+          description: password
+          required: true
+          type: string
+          paramType: form
+
+        - name: phone
+          description: phone number
+          required: true
+          type: string
+          paramType: form
+
+        - name: gender
+          description: gender
+          required: false
+          type: string
+          paramType: form
+
+        - name: marital_status
+          description: if married
+          required: false
+          type: string
+          paramType: form
+        """
+
         try:
             create_new_user(data=request.data)
             return Response({'status': '202'})
@@ -188,6 +207,40 @@ class account(APIView):
             return Response({'status': '407'})
 
     def put(self, request):
+        """
+        Update an existed user.
+        ---
+        parameters:
+        - name: firstName
+          description: first name
+          required: false
+          type: string
+          paramType: form
+
+        - name: password
+          description: password
+          required: false
+          type: string
+          paramType: form
+
+        - name: phone
+          description: phone number
+          required: true
+          type: string
+          paramType: form
+
+        - name: gender
+          description: gender
+          required: false
+          type: string
+          paramType: form
+
+        - name: maritalStatus
+          description: if married
+          required: false
+          type: string
+          paramType: form
+        """
         try:
             update_user(data=request.data)
             return Response({'status': '202'})
@@ -292,8 +345,8 @@ def update_contract_list(username, to_user, relation, remark_name):
     friend_name = friend.first_name
     if friend.full_name:
         friend_name = friend.full_name
-    if friend.nickname:
-        friend_name = friend.nickname
+        if friend.nickname:
+            friend_name = friend.nickname
 
     first_char = 'T'
     remark_tags = relation
@@ -362,12 +415,12 @@ class Avator(APIView):
 
         ---
         parameters:
-        - name: photo
-          descritpion: phote's binary data
-          required: true
-          type: binary
-          parameType: form
-        """
+            - name: photo
+            descritpion: phote's binary data
+            required: true
+            type: binary
+            parameType: form
+            """
 
         user_set = User.object.filter(phone=user_name)
         binary_data = request.data.get('photo', None)

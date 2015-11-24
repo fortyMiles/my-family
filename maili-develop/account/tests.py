@@ -52,3 +52,52 @@ class AccountServiceFunctionTest(TestCase):
         self.assertEquals(self.gender, 'M')
         self.assertEquals(self.first_name, u'高')
         self.assertEqual(user.marital_status, True)
+
+
+class AccountViewTest(TestCase):
+    '''
+    Test cases of account.view
+    '''
+
+    def setUp(self):
+        self.name = '18868103391'
+        self.password = 'miffy31415926'
+        self.first_name = u'高'
+        self.gender = 'M'
+        self.marital_status = False
+
+        self.new_data = {
+            'phone': self.name,
+            'password': self.password,
+            'first_name': self.first_name,
+            'gender': self.gender,
+            'marital_status': self.marital_status
+        }
+
+        self.update_data = {
+            'phone': self.name,
+            'marital_status': True
+        }
+
+    def test_register(self):
+        user = User.objects.filter(phone=self.name)
+        self.assertEqual(len(user), 0)
+
+        url = '/account/user/'
+        resp = self.client.post(url, self.new_data)
+        data = resp.data
+        self.assertEqual(data['status'], '202')
+        user = User.objects.filter(phone=self.name)
+        self.assertEqual(len(user), 1)
+
+    def test_update(self):
+        url = '/account/user/'
+        resp = self.client.put(
+            url,
+            self.update_data,
+            'application/x-www-form-urlencoded'
+        )
+        data = resp.data
+        self.assertEqual(data['status'], '202')
+        user = User.objects.get(phone=self.name)
+        self.assertEqual(user.marital_status, True)

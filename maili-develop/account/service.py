@@ -3,6 +3,12 @@ from .serializers import UserSerializer
 from feed.service import create_default_feed_group
 
 
+def get_user_info(username):
+    user = User.objects.filter(phone=username)[0]
+    serializer = UserSerializer(user)
+    return serializer.data
+
+
 def user_exist(username):
     user = User.objects.filter(phone=username)
     if user:
