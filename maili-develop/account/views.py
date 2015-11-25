@@ -95,7 +95,6 @@ def get_verification_code(request):
 
     # phone = request.query_params['phone']
 
-    import pdb; pdb.set_trace()
     phone = (request.data['phone'])
     code = send_message.random_code(phone)
     success = send_message.send_message(phone, code)
@@ -142,7 +141,6 @@ def get_user(request, username):
             first_name: string
         }
     """
-    import pdb; pdb.set_trace()
     return Response(get_user_info(username))
 
 
@@ -271,7 +269,7 @@ class UserAccount(APIView):
             return Response({'status': '202'})
         except Exception as e:
             print e
-            return Response({'status': '409'})
+            return Response({'status': '407'})
 
 
 @api_view([GET])

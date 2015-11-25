@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -40,6 +41,6 @@ class Relation(APIView):
         """
 
         user1 = request.data.get('user1', None)
-        user1 = request.data.get('user1', None)
-        user1 = request.data.get('user1', None)
-        user1 = request.data.get('user1', None)
+        user2 = request.data.get('user2', None)
+        relation = request.data.get('relation', None)
+        nickname = request.data.get('nickname', None)
