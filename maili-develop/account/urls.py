@@ -9,7 +9,6 @@ urlpatterns = [
      url(r'captcha/', views.get_verification_code,
          name='get-verification-code'),
      url(r'exist/(?P<name>[a-z0-9]+)/', views.test_exist, name='exist'),
-     url(r'relation/', views.update_relation_list, name='relation'),
      url(r'contract/(?P<name>[a-z0-9]+)/', views.contract, name='contract'),
      url(r'avatar/(?P<user_name>[a-z0-9]+)',
          views.Avator.as_view(), name='avatar'),
