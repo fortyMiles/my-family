@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'account',
     'rest_framework_swagger',
     'feed',
+    'relation',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -82,7 +83,7 @@ WSGI_APPLICATION = 'maili.wsgi.application'
 
 default_db = {
     'ENGINE': 'django.db.backends.mysql',
-    'NAME': 'maili-test',
+    'NAME': 'maili',
     'USER': 'root',
     'PASSWORD': 'D0nt@D1nn3r',
     'HOST': '121.40.158.110',
