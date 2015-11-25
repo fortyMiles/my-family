@@ -26,6 +26,7 @@ by simply registering the viewsets with a router class.
 
 urlpatterns = [
     url(r'^account/', include('account.urls', namespace='account')),
+    url(r'^relation/', include('relation.urls', namespace='relation')),
     url(r'^group/', include('group.urls', namespace='group')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
