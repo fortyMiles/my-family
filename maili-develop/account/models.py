@@ -44,17 +44,6 @@ class User(AbstractBaseUser):
         db_table = 'user'
 
 
-class Relationship(models.Model):
-    ''' 关系表 '''
-    from_user_id = models.UUIDField(db_index=True)
-    to_user_id = models.UUIDField(db_index=True)
-    relation = models.CharField(max_length=15, db_index=True)  # 关系的名称
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = "relationship"
-
-
 class Friendship(models.Model):
     ''' 朋友，也即通讯录 '''
     user_id = models.UUIDField(db_index=True)  # 谁的通讯录
