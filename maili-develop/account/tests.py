@@ -42,17 +42,6 @@ class AccountServiceFunctionTest(TestCase):
 
         self.assertIsNotNone(user)
 
-    def test_update_user(self):
-
-        create_new_user(self.new_data)
-        update_user(self.update_data)
-
-        user = User.objects.get(phone=self.name)
-        self.assertEqual(self.name, user.phone)
-        self.assertEquals(self.gender, 'M')
-        self.assertEquals(self.first_name, u'高')
-        self.assertEqual(user.marital_status, True)
-
 
 class AccountViewTest(TestCase):
     '''
@@ -79,6 +68,15 @@ class AccountViewTest(TestCase):
             'marital_status': True
         }
 
+    def test_get_verification (self):
+        post = {
+            'phone': 18857453090
+        }
+
+        url = '/account/captcha/'
+        resp = self.client.post(url, self.new_data)
+        print resp
+
     def test_register(self):
         user = User.objects.filter(phone=self.name)
         self.assertEqual(len(user), 0)
@@ -90,14 +88,4 @@ class AccountViewTest(TestCase):
         user = User.objects.filter(phone=self.name)
         self.assertEqual(len(user), 1)
 
-    def test_update(self):
-        url = '/account/user/'
-        resp = self.client.put(
-            url,
-            self.update_data,
-            'application/x-www-form-urlencoded'
-        )
-        data = resp.data
-        self.assertEqual(data['status'], '202')
-        user = User.objects.get(phone=self.name)
-        self.assertEqual(user.marital_status, True)
+

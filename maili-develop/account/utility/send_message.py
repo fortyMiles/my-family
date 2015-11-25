@@ -25,6 +25,7 @@ def send_message(phone, code):
         phone: phone number
     '''
 
+    import pdb;pdb.set_trace()
     current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")[:-3]
     print current_time
 
