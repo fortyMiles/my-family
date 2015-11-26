@@ -11,7 +11,7 @@ class FeedGroup(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     group_id = models.CharField(max_length=30, unique=True)
     creator = models.CharField(max_length=13)
-    tag = models.CharField(max_length=20, unique=True)
+    tag = models.CharField(max_length=20)
 
     class Meta:
         db_table = 'feed_group'

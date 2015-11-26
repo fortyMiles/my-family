@@ -8,7 +8,7 @@ from relation.service import check_relation_exist
 from relation.service import find_converse_relation
 from relation.service import create_relation
 from relation.service import update_contract_list
-from relation.service import get_contrat
+from relation.service import get_contract
 from relation.utility import build_model
 
 
