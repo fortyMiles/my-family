@@ -14,14 +14,18 @@ from .error import MyError
 def check_user_exist(user):
     user = User.objects.filter(phone=user)
     if len(user) == 0:
-        raise MyError(404)
+        return False
+    else:
+        return True
 
 
 def check_relation_exist(user1, user2):
     relation = User.objects.filter(user_from=user1, user_to=user2)
 
-    if len(relation) > 0:
-        raise MyError(409)
+    if len(relation) == 0:
+        return False
+    else:
+        return True
 
 
 def check_relation_accept(relation):
@@ -33,7 +37,8 @@ def check_relation_accept(relation):
         relation_dic.setdefault(relation.title, True)
 
     if relation not in relation_dic:
-        raise MyError(406)
+        return False
+    return True
 
 
 def check_args(user1, user2, relation):
