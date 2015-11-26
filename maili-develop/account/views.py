@@ -4,10 +4,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from account.models import User
-from account.models import Friendship
+from relation.models import Contract
 from account.utility import send_message
 from account.utility import send_binary
-from account.serializers import FriendshipSerializer
 from .service import user_exist
 from .service import update_user
 from .service import create_new_user
@@ -270,24 +269,6 @@ class UserAccount(APIView):
         except Exception as e:
             print e
             return Response({'status': '407'})
-
-
-@api_view([GET])
-def contract(request, name):
-    """
-    Gets one person's all friends in his/her contract.
-    """
-    if request.method == GET:
-        try:
-            user = User.objects.filter(phone=name)
-            user_id = user[0].id
-            friends = Friendship.objects.filter(user_id=user_id)
-            serializer = FriendshipSerializer(friends, many=True)
-            return Response({'status': status.HTTP_200_OK,
-                             'data': serializer.data})
-        except Exception as e:
-            print e
-            return Response({'status': status.HTTP_400_BAD_REQUEST})
 
 
 class Avator(APIView):

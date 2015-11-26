@@ -40,26 +40,11 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = ['phone']
 
+    def is_male(self):
+        return self.gender == 'M'
+
     class Meta:
         db_table = 'user'
-
-
-class Friendship(models.Model):
-    ''' 朋友，也即通讯录 '''
-    user_id = models.UUIDField(db_index=True)  # 谁的通讯录
-    friend_id = models.UUIDField()  # 朋友id
-    friend_name = models.CharField(max_length=40)  # 朋友的名称
-    friend_phone = models.CharField(max_length=18)  # 朋友的手机
-    remark_name = models.CharField(max_length=40)  # 备注名，默认是contact_name
-    first_char = models.CharField(max_length=1)  # 首字母，便于搜索
-    remark_tags = models.CharField(max_length=50)  # 标签
-    send_msg_count = models.IntegerField(default=0)  # 发送了几条消息
-    receive_msg_count = models.IntegerField(default=0)  # 收到几条消息
-    unread_msgs = models.IntegerField(default=0)  # 几条未读消息
-    deleted = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = "friendship"
 
 
 class UserCounter(models.Model):

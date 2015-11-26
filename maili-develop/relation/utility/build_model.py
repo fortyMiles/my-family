@@ -11,6 +11,7 @@ def build_model():
     data = open('/Users/develop/Workspace/my-family/maili-develop/relation/utility/data.data', 'r')
 
     def change_to_int(e):
+        e = e.strip()
         if e.isdigit():
             e = int(e)
         return e
@@ -27,4 +28,4 @@ def build_model():
 
 
 if __name__ == '__main__':
-    build_model()
+    uild_model()
