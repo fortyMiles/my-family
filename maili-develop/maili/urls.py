@@ -29,7 +29,8 @@ urlpatterns = [
     url(r'^relation/', include('relation.urls', namespace='relation')),
     url(r'^group/', include('group.urls', namespace='group')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
     # add REST framework access control.
     url(r'^docs/', include('rest_framework_swagger.urls')),
 ]

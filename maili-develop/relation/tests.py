@@ -2,6 +2,8 @@
 from django.test import TestCase
 from relation.models import RelationValue
 from account.models import User
+from relation.service import check_user_exist
+from relation.utility import build_model
 
 
 class TestRelationService(TestCase):
@@ -17,4 +19,5 @@ class TestRelationService(TestCase):
         lily.save()
 
     def test_check_user_exist(self):
-        pass
+        user1 = '18857453090'
+        user2 = '18857453091'

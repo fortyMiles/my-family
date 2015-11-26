@@ -141,7 +141,6 @@ def get_user(request, username):
             first_name: string
         }
     """
-    import pdb; pdb.set_trace()
     return Response(get_user_info(username))
 
 
@@ -149,21 +148,22 @@ class UserAccount(APIView):
     """
     Creates or updates a user.
 
-    data:
-
-        {
-        "phone":varchar(), // require: True
-        "password":md5_varchar(),
-        "first_name":varchar(),
-        "gender":varchar(),
-        "marital_status":varchar()
-        }
-
     """
 
     def post(self, request):
         """
         Create a new user.
+
+        data:
+
+        {
+        "phone":varchar(), // require: True
+        "password":md5_varchar(),
+        "first_name":varchar(),
+        "gender":varchar(), // ('M', 'F', 'U')
+        "marital_status":varchar(), // (true, false)
+        "nickname": varchar()
+        }
 
         ---
         parameters:
@@ -196,6 +196,12 @@ class UserAccount(APIView):
           required: false
           type: string
           paramType: form
+
+        - name: nickname
+          description: nickname
+          required: false
+          type: string
+          parameType: form
         """
 
         try:
@@ -203,14 +209,26 @@ class UserAccount(APIView):
             return Response({'status': '202'})
         except Exception as e:
             print e
-            return Response({'status': '407'})
+            return Response({'status': '409'})
 
     def put(self, request):
         """
         Update an existed user.
+
+        data:
+
+        {
+        "phone":varchar(), // require: True
+        "password":md5_varchar(),
+        "first_name":varchar(),
+        "gender":varchar(), // ('M', 'F', 'U')
+        "marital_status":varchar(), // (true, false)
+        "nickname": varchar()
+        }
+
         ---
         parameters:
-        - name: firstName
+        - name: first_name
           description: first name
           required: false
           type: string
@@ -234,7 +252,13 @@ class UserAccount(APIView):
           type: string
           paramType: form
 
-        - name: maritalStatus
+        - name: marital_status
+          description: if married
+          required: false
+          type: string
+          paramType: form
+
+        - name: nickname
           description: if married
           required: false
           type: string
@@ -246,7 +270,6 @@ class UserAccount(APIView):
         except Exception as e:
             print e
             return Response({'status': '407'})
-
 
 
 @api_view([GET])
@@ -306,12 +329,12 @@ class Avator(APIView):
 
         ---
         parameters:
-            - name: photo
-            descritpion: phote's binary data
-            required: true
-            type: binary
-            parameType: form
-            """
+        - name: photo
+          descritpion: phote's binary data
+          required: true
+          type: binary
+          parameType: form
+        """
 
         user_set = User.object.filter(phone=user_name)
         binary_data = request.data.get('photo', None)
