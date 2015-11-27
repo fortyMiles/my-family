@@ -11,6 +11,7 @@ from relation.service import get_contract
 from relation.service import get_friend_information
 from scope.service import update_user_scope
 from scope.service import get_home_member
+from scope.service import get_home_id
 
 
 class Relation(APIView):
@@ -122,13 +123,36 @@ def home_member_list(request, name):
     """
     Gets one person's home member list.
 
+    data:
+
+        {'home_id': string;
+        'data': json
+        'status': http status
+        }
+
     """
 
     try:
         home_member = get_home_member(name)
         data = get_friend_information(home_member)
-        return Response({'status': status.HTTP_200_OK,
-                         'data': data})
+        home_id = get_home_id(name)
+        return Response({
+            'status': status.HTTP_200_OK,
+            'data': data,
+            'home_id': home_id})
     except Exception as e:
         print e
         return Response({'status': status.HTTP_400_BAD_REQUEST})
+
+
+@api_view(['GET'])
+def catch_home_id(request, name):
+    try:
+        home_id = get_home_id(name)
+        return Response({
+            'status': status.HTTP_200_OK,
+            'home_id': home_id})
+    except Exception as e:
+        print e
+        return Response({'status': status.HTTP_400_BAD_REQUEST})
+

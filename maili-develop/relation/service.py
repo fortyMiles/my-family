@@ -144,7 +144,6 @@ def relation_distance(relation):
 
 
 def get_friend_information(phone_number_list):
-    import pdb;pdb.set_trace()
     contract_set = Contract.objects.filter(friend_phone__in=phone_number_list)
     serializer = ContractSerilizer(contract_set, many=True)
     return serializer.data

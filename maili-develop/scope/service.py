@@ -1,6 +1,8 @@
 from scope.models import Scope
 from scope.models import ScopeGroup
 from relation.service import is_close_family_member
+from group.group_service import create_home_group
+from group.group_service import join_to_group
 import time
 
 FRIEND = 'friend'
@@ -15,6 +17,8 @@ def create_one_scope(username, tag):
     '''
     scope_name = get_scope_name(username, tag)
     feed_group = Scope(scope=scope_name, owner=username, tag=tag)
+    home_id = get_home_id(username)
+    create_home_group(username, home_id)
     feed_group.save()
 
 
@@ -57,8 +61,16 @@ def update_user_scope(user1, user2, scope, relation):
 
     if scope == HOME:
         update_scope_group(user1, user2, HOME)
+
+        home_id = get_home_id(user1)
+        join_to_group(username=user2, group=home_id)
+        # add user2 to user1's group home
         if is_close_family_member(user1, user2, relation):
             update_scope_group(user2, user1, HOME)
+
+            home_id = get_home_id(user2)
+            join_to_group(username=user1, group=home_id)
+            # add user1 to user2's group home
         else:
             update_scope_group(user2, user1, RELATION)
     else:
@@ -74,6 +86,7 @@ def update_scope_group(user1, user2, tag):
     scope_group = ScopeGroup(scope=scope, member=user2, tag=tag)
     scope_group.save()
 
+
 def get_home_member(user):
     '''
     Gets the 'seven' closet persons.
@@ -87,3 +100,11 @@ def get_home_member(user):
         user_json[member.member] = member.tag
 
     return user_json
+
+
+def get_home_id(user):
+    '''
+    Gets the person's hoem id, for group chatting.
+    '''
+    scope_name = Scope.objects.filter(owner=user).filter(tag=HOME)[0].scope
+    return scope_name

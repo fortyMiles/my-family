@@ -7,6 +7,7 @@ from group.group_service import group_exist
 from group.group_service import create_group
 from group.group_service import join_to_group
 from group.group_service import get_member_joined_groups
+from group.serializers import GroupSerializer
 # Create your views here.
 
 
@@ -76,8 +77,7 @@ class Join(APIView):
 
 class Member(APIView):
     '''
-    1. Add a person to one group
-    2. get one person's all incorported groups.
+    Get one person's all incorported groups.
     '''
     def get(self, request, name):
         '''
@@ -113,15 +113,6 @@ class GroupAPI(APIView):
             return Group.objects.get(name=name)
         except Exception as e:
             raise e
-
-    def get(self, request, name, format=None):
-        '''
-        gets a group's information
-
-        '''
-        group = self.get_object(name)
-        serializer = GroupSerializer(group)
-        return Response({'status': status.HTTP_200_OK, 'data': serializer.data})
 
     def put(self, request, name, format=None):
         group = self.get_object(name)
