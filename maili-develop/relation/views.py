@@ -3,11 +3,14 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from relation.service import check_user_exist
+from account.service import check_user_exist
 from relation.service import check_relation_exist
 from relation.service import check_relation_accept
 from relation.service import create_relation
 from relation.service import get_contract
+from relation.service import get_friend_information
+from scope.service import update_user_scope
+from scope.service import get_home_member
 
 
 class Relation(APIView):
@@ -27,19 +30,22 @@ class Relation(APIView):
             朋友
         )
 
-        data:
+        ata:
 
             {
             "user1": varchar(), // user1 is 小明
             "user2": varchar(), // user2 is his mother
             "relation": varchar() // relation is 母亲
+            "scope": <F, H, R> // if this person is your family, send H, means Home
+            // if is other relations, send R, means Relation. If this person is your friend, not
+            // your any relation but is your friend. send F, means Friend
             "nickname": nickname  // required == false
             }
 
         return:
 
             - 201: relation created.
-            - 406: Relation is not acceptable
+            - 406: Relation or Scope is not acceptable
             - 409: the relation is already existd.
             - 404: the user is not found.
 
@@ -58,7 +64,7 @@ class Relation(APIView):
           paramters: form
 
         - name: relation
-          description: relation is 妈妈
+          description: relation is 母亲
           required: true
           type: string
           paramters: form
@@ -68,12 +74,19 @@ class Relation(APIView):
           required: false
           type: string
           paramters: form
+
+        - name: scope
+          description: scope is H
+          required: true
+          type: string
+          parameters: form
         """
 
         user1 = request.data.get('user1', None)
         user2 = request.data.get('user2', None)
         relation = request.data.get('relation', None)
-        nickname = request.data.get('nickname', None)
+        nickname = request.data.get('nickname', 'Nickname')
+        scope = request.data.get('scope', None)
 
         user1_exist = check_user_exist(user1)
         user2_exist = check_user_exist(user2)
@@ -86,6 +99,7 @@ class Relation(APIView):
             return Response({'status': status.HTTP_406_NOT_ACCEPTABLE})
         else:
             create_relation(user1, user2, relation, nickname)
+            update_user_scope(user1, user2, scope, relation)
             return Response({'status': status.HTTP_201_CREATED})
 
 
@@ -96,6 +110,23 @@ def contract_list(request, name):
     """
     try:
         data = get_contract(user_account=name)
+        return Response({'status': status.HTTP_200_OK,
+                         'data': data})
+    except Exception as e:
+        print e
+        return Response({'status': status.HTTP_400_BAD_REQUEST})
+
+
+@api_view(['GET'])
+def home_member_list(request, name):
+    """
+    Gets one person's home member list.
+
+    """
+
+    try:
+        home_member = get_home_member(name)
+        data = get_friend_information(home_member)
         return Response({'status': status.HTTP_200_OK,
                          'data': data})
     except Exception as e:

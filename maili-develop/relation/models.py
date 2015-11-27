@@ -17,7 +17,7 @@ class Relationship(models.Model):
     user_from = models.CharField(max_length=15)
     user_to = models.CharField(max_length=15)
     relation = models.CharField(max_length=15)
-    nickname = models.CharField(max_length=15)
+    nickname = models.CharField(max_length=15, blank=True)
     create_at = models.DateTimeField(auto_now_add=True)
 
 class Contract(models.Model):
@@ -33,6 +33,7 @@ class Contract(models.Model):
     receive_msg_count = models.IntegerField(default=0)  # 收到几条消息
     unread_msgs = models.IntegerField(default=0)  # 几条未读消息
     deleted = models.BooleanField(default=False)
+    relation = models.CharField(max_length=40, default='friend')  # 关系<朋友，姐姐，妹妹等>
 
     class Meta:
         db_table = "contract"

@@ -2,13 +2,15 @@
 from django.test import TestCase
 from relation.models import Relationship
 from account.models import User
-from relation.service import check_user_exist
 from relation.service import check_relation_accept
 from relation.service import check_relation_exist
 from relation.service import find_converse_relation
 from relation.service import create_relation
 from relation.service import update_contract_list
 from relation.service import get_contract
+from relation.service import relation_distance
+from relation.service import is_close_family_member
+from relation.service import is_sibling
 from relation.utility import build_model
 
 
@@ -21,17 +23,20 @@ class TestRelationService(TestCase):
         minchiuan = User(phone=phone1,
                          password='12345678910',
                          gender='M',
-                         last_name='高')
+                         last_name='高',
+                         marital_status=False)
 
         lily = User(phone=phone2,
                     password='12345678910',
                     gender='F',
-                    last_name='粒')
+                    last_name='粒',
+                    marital_status=True)
 
         hua = User(phone='18868103391',
                    password='12345678910',
                    gender='F',
-                   last_name='粒')
+                   last_name='粒',
+                   marital_status=True)
 
         minchiuan.save()
         lily.save()
@@ -42,16 +47,6 @@ class TestRelationService(TestCase):
         relationship.save()
 
         build_model.build_model()
-
-    def test_check_user_exist(self):
-        user1 = '18857453090'
-        user2 = '18857453091'
-
-        exist = check_user_exist(user1)
-        self.assertEqual(exist, True)
-
-        exist = check_user_exist(user2)
-        self.assertEqual(exist, False)
 
     def test_relation_exist(self):
         user1 = '18857453090'
@@ -111,3 +106,41 @@ class TestRelationService(TestCase):
         data = get_contract(phone1)
         print(data)
 
+    def test_is_close_family_member(self):
+        chiuan = '18857453090'
+        lily = '18668831228'
+        hua = '18868103391'
+
+        close = is_close_family_member(chiuan, lily, '妻子')
+        self.assertEqual(close, True)
+
+        close = is_close_family_member(chiuan, hua, '女儿')
+        self.assertEqual(close, True)
+
+        close = is_close_family_member(chiuan, hua, '妹妹')
+        self.assertEqual(close, False)
+
+    def test_is_sibling(self):
+        relation = '哥哥'
+        self.assertEqual(is_sibling(relation), True)
+
+        relation1 = '弟弟'
+        self.assertEqual(is_sibling(relation1), True)
+
+        relation2 = '妹妹'
+        self.assertEqual(is_sibling(relation2), True)
+
+        relation3 = '姐姐'
+        self.assertEqual(is_sibling(relation3), True)
+
+        relation4 = '父亲'
+        self.assertEqual(is_sibling(relation4), False)
+
+    def test_relation_disctance(self):
+        relation = '哥哥'
+        distance = relation_distance(relation)
+        self.assertEqual(distance, 1)
+
+        relation = '爷爷'
+        distance = relation_distance(relation)
+        self.assertEqual(distance, 2)

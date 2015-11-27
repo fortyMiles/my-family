@@ -4,10 +4,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from account.models import User
-from relation.models import Contract
 from account.utility import send_message
 from account.utility import send_binary
-from .service import user_exist
+from .service import check_user_exist
 from .service import update_user
 from .service import create_new_user
 from .service import get_user_info
@@ -119,7 +118,7 @@ def test_exist(request, name):
         {'exist': Boolean}
 
     """
-    exist = user_exist(name)
+    exist = check_user_exist(name)
     if exist:
         return Response({'exist': True})
     else:
@@ -140,7 +139,12 @@ def get_user(request, username):
             first_name: string
         }
     """
-    return Response(get_user_info(username))
+    data = get_user_info(username)
+
+    if data:
+        return Response({'status': 200, 'data': data})
+    else:
+        return Response({'status': 404})
 
 
 class UserAccount(APIView):

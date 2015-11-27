@@ -44,7 +44,7 @@ def send_message(phone, code):
     }
 
     print("sending message..")
-    response = requests.post(VER_URL, data=verify_code)
+    response = requests.post(VER_URL, data=verify_code, verify=False)
     status = response.json()['resp']['respCode']
 
     success = False

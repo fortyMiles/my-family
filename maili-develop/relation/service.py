@@ -12,14 +12,6 @@ from .models import Contract
 from .serializers import ContractSerilizer
 
 
-def check_user_exist(user):
-    user = User.objects.filter(phone=user)
-    if len(user) == 0:
-        return False
-    else:
-        return True
-
-
 def check_relation_exist(user1, user2):
     '''
     check if there already is an existed relation between two persons.
@@ -45,8 +37,6 @@ def check_relation_accept(relation):
 
 
 def check_args(user1, user2, relation):
-    check_user_exist(user1)
-    check_user_exist(user2)
     check_relation_exist(user1, user2)
     check_relation_accept(relation)
 
@@ -58,7 +48,6 @@ def create_relation(user1, user2, relation, nickname):
         user_from=user1, user_to=user2,
         relation=abbr, nickname=nickname)
     new_relation.save()
-
 
     (con_abbr, con_title) = find_converse_relation(user1, relation)
 
@@ -106,7 +95,7 @@ def update_contract_list(user1, user2, relation, nickname):
         user_id=user_id, friend_id=friend_id,
         friend_name=friend.nickname,
         friend_phone=user2, remark_name=relation, first_char='C',
-        remark_tags=relation)
+        remark_tags=relation, relation=relation)
 
     friendship.save()
 
@@ -119,4 +108,43 @@ def get_contract(user_account):
     user_id = user_set[0].id
     contracts = Contract.objects.filter(user_id=user_id)
     serializer = ContractSerilizer(contracts, many=True)
+    return serializer.data
+
+
+def user_has_married(phone_number):
+    user = User.objects.filter(phone=phone_number)[0]
+    return user.marital_status
+
+
+def is_close_family_member(user1, user2, relation):
+    close = False
+    if relation_distance(relation) <= 1:
+        if not is_sibling(relation):
+            close = True
+        elif user_has_married(user1) or user_has_married(user2):
+            close = False
+        else:
+            close = True
+    return close
+
+
+def is_sibling(relation):
+    relation_abbr = RelationValue.objects.get(title=relation).abbr
+    SIBLING = ['CA', 'CB', 'CC', 'CD']
+    return relation_abbr in SIBLING
+
+
+def relation_distance(relation):
+    '''
+    Gets the relation distance of this relation.
+    e.g: father: 1, son:1, wife:1, grandfather: 2
+    '''
+    level = RelationValue.objects.get(title=relation).level
+    return level
+
+
+def get_friend_information(phone_number_list):
+    import pdb;pdb.set_trace()
+    contract_set = Contract.objects.filter(friend_phone__in=phone_number_list)
+    serializer = ContractSerilizer(contract_set, many=True)
     return serializer.data

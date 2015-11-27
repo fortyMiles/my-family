@@ -1,9 +1,13 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*
 from django.test import TestCase
-from .service import create_new_user
-from .service import update_user
-from .models import User
+from account.service import create_new_user
+from account.service import update_user
+from account.service import get_user
+from account.service import user_has_married
+from account.models import User
+from account.tests import import_users
 from feed.models import FeedGroup
+from scope.models import Scope
 
 # Create your tests here.
 
@@ -11,7 +15,7 @@ from feed.models import FeedGroup
 class AccountServiceFunctionTest(TestCase):
 
     def setUp(self):
-        self.name = '18868103391'
+        self.name = '18857453090'
         self.password = 'miffy31415926'
         self.first_name = u'高'
         self.gender = 'M'
@@ -30,6 +34,7 @@ class AccountServiceFunctionTest(TestCase):
             'marital_status': True
         }
 
+
     def test_create_user(self):
         create_new_user(self.new_data)
 
@@ -41,6 +46,21 @@ class AccountServiceFunctionTest(TestCase):
             print g.tag
 
         self.assertIsNotNone(user)
+
+    def test_get_user(self):
+        user_phone = '18857453090'
+        create_new_user(self.new_data)
+        user = get_user(user_phone)
+
+        user_phone = '18857453099'
+        user = get_user(user_phone)
+        self.assertEqual(user, None)
+
+    def test_is_married(self):
+        self.new_data['marital_status'] = True
+        create_new_user(self.new_data)
+        married = user_has_married('18857453090')
+        self.assertEqual(married, True)
 
 
 class AccountViewTest(TestCase):
@@ -68,6 +88,7 @@ class AccountViewTest(TestCase):
             'marital_status': True
         }
 
+    '''
     def test_get_verification (self):
         post = {
             'phone': 18857453090
@@ -76,8 +97,12 @@ class AccountViewTest(TestCase):
         url = '/account/captcha/'
         resp = self.client.post(url, self.new_data)
         print resp
+    '''
 
     def test_register(self):
+
+        import_users.read_user_infor_from_file(self.client)
+        '''
         user = User.objects.filter(phone=self.name)
         self.assertEqual(len(user), 0)
 
@@ -87,5 +112,11 @@ class AccountViewTest(TestCase):
         self.assertEqual(data['status'], '202')
         user = User.objects.filter(phone=self.name)
         self.assertEqual(len(user), 1)
+        '''
+        scope_set = Scope.objects.filter(owner='18868103391')
+        for s in scope_set:
+            print s.scope
 
-
+        self.assertEqual(len(scope_set), 3)
+        self.assertNotEquals(scope_set[0].scope, scope_set[1].scope)
+        self.assertNotEquals(scope_set[1].scope, scope_set[2].scope)

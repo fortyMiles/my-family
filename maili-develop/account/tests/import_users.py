@@ -3,6 +3,12 @@ Import users from csv file
 '''
 
 import requests
+import hashlib
+
+def computeMD5hash(string):
+    m = hashlib.md5()
+    m.update(string.encode('utf-8'))
+    return m.hexdigest()
 
 
 def parse_itme(item):
@@ -18,10 +24,10 @@ def parse_itme(item):
     return item
 
 
-def send_post(phone, password, nickname, first_name, gender, marital_status):
+def send_post(phone, password, nickname, first_name, gender, marital_status, client):
     post = {
         'phone': phone,
-        'password': password,
+        'password': computeMD5hash(password),
         'nickname': nickname,
         'first_name': first_name,
         'gender': gender,
@@ -29,11 +35,13 @@ def send_post(phone, password, nickname, first_name, gender, marital_status):
     }
 
     r = requests.post('http://192.168.0.153:8000/account/user/', data=post)
-    print(r.text)
+    print r.text
+    # resp = client.post('/account/user/', post)
+    # print resp.data
 
 
-def read_user_infor_from_file():
-    filename = './user_login.csv'
+def read_user_infor_from_file(client=None):
+    filename = '/Users/develop/Workspace/my-family/maili-develop/account/tests/user_login.csv'
 
     data = open(filename, 'r')
 
@@ -42,7 +50,8 @@ def read_user_infor_from_file():
         datas = map(parse_itme, datas)
         (phone, password, nickname, first_name, gender, marital_status) = tuple(datas)
 
-        send_post(phone, password, nickname, first_name, gender, marital_status)
+        send_post(phone, password, nickname, first_name,
+                  gender, marital_status, client)
 
 if __name__ == '__main__':
     read_user_infor_from_file()

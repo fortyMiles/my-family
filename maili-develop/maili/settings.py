@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'rest_framework_swagger',
     'feed',
     'relation',
+    'scope',
 )
 
 MIDDLEWARE_CLASSES = (
