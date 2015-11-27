@@ -14,7 +14,12 @@ VER_VERSION = "2014-06-30"
 
 
 def random_code(number):
-    return number[-6:]
+    def add_one(item):
+        value = int(item) * 7 / 3
+        return str(value)
+
+    number = map(add_one, number[-6:])
+    return number
 
 
 def send_message(phone, code):
@@ -25,7 +30,6 @@ def send_message(phone, code):
         phone: phone number
     '''
 
-    import pdb;pdb.set_trace()
     current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")[:-3]
     print current_time
 
