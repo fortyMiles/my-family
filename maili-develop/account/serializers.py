@@ -8,10 +8,10 @@ class UserSerializer(serializers.ModelSerializer):
     gender = serializers.CharField(max_length=2, required=False)
     marital_status = serializers.BooleanField(required=False)
     nickname = serializers.CharField(max_length=30, required=False)
+    avatar = serializers.CharField(max_length=50, required=False)
 
     class Meta:
         model = User
         fields = ('phone', 'password', 'first_name',
-                  'gender', 'marital_status', 'nickname')
-
-
+                  'gender', 'marital_status', 'nickname',
+                  'avatar')
