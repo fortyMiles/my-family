@@ -45,6 +45,7 @@ def update_user(data):
 
 
 def create_new_user(data):
+    #import pdb; pdb.set_trace()
     serializer = UserSerializer(data=data)
     if serializer.is_valid():
         serializer.save()

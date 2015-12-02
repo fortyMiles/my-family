@@ -4,6 +4,8 @@ Import users from csv file
 
 import requests
 import hashlib
+import sys
+
 
 def computeMD5hash(string):
     m = hashlib.md5()
@@ -24,7 +26,8 @@ def parse_itme(item):
     return item
 
 
-def send_post(phone, password, nickname, first_name, gender, marital_status, client):
+def send_post(phone, password, nickname, first_name,
+              gender, marital_status, client):
     post = {
         'phone': phone,
         'password': computeMD5hash(password),
@@ -34,10 +37,12 @@ def send_post(phone, password, nickname, first_name, gender, marital_status, cli
         'marital_status': marital_status
     }
 
-    r = requests.post('http://192.168.0.153:8000/account/user/', data=post)
-    print r.text
-    # resp = client.post('/account/user/', post)
-    # print resp.data
+    if 'test' in sys.argv:
+        resp = client.post('/account/user/', post)
+        print resp.data
+    else:
+        r = requests.post('http://192.168.0.153:8000/account/user/', data=post)
+        print r.text
 
 
 def read_user_infor_from_file(client=None):
