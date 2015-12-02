@@ -35,6 +35,7 @@ def check_user_exist(username):
 
 
 def update_user(data):
+    data = create_avatar(data)
     user = User.objects.get(phone=data['phone'])
     serializer = UserSerializer(user, data=data)
 
@@ -45,7 +46,7 @@ def update_user(data):
 
 
 def create_new_user(data):
-    #import pdb; pdb.set_trace()
+    data = create_avatar(data)
     serializer = UserSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
@@ -54,3 +55,27 @@ def create_new_user(data):
         create_default_scope(user_phone)
     else:
         print serializer.errors
+
+
+def create_avatar(data):
+    if 'gender' in data and 'marital_status' in data:
+        pic = get_avatar(data['gender'], data['marital_status'])
+        data.setdefault('avatar', pic)
+    return data
+
+
+def get_avatar(gender, married):
+    '''
+    Set default avatar
+    '''
+    from account.configuration.picture import AVATAR
+
+    picture = None
+
+    if gender in AVATAR and married in AVATAR[gender]:
+        picture = AVATAR[gender][married]
+    else:
+        picture = AVATAR['U']
+
+
+    return picture

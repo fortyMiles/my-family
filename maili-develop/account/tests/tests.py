@@ -4,6 +4,8 @@ from account.service import create_new_user
 from account.service import update_user
 from account.service import get_user
 from account.service import user_has_married
+from account.service import create_avatar
+from account.service import get_avatar
 from account.models import User
 from account.tests import import_users
 from feed.models import FeedGroup
@@ -34,10 +36,8 @@ class AccountServiceFunctionTest(TestCase):
             'marital_status': True
         }
 
-
     def test_create_user(self):
         create_new_user(self.new_data)
-
         user = User.objects.get(phone=self.name)
         group_set = FeedGroup.objects.filter(creator=self.name)
         self.assertEqual(len(group_set), 3)
@@ -46,6 +46,14 @@ class AccountServiceFunctionTest(TestCase):
             print g.tag
 
         self.assertIsNotNone(user)
+
+    def test_update_user(self):
+        create_new_user(self.new_data)
+        update_user(self.update_data)
+        user_set = User.objects.filter(phone=self.name)
+        self.assertEqual(len(user_set), 1)
+        self.assertEqual(user_set[0].marital_status, True)
+        self.assertIsNotNone(user_set[0].avatar)
 
     def test_get_user(self):
         user_phone = '18857453090'
@@ -61,6 +69,16 @@ class AccountServiceFunctionTest(TestCase):
         create_new_user(self.new_data)
         married = user_has_married('18857453090')
         self.assertEqual(married, True)
+
+    def test_get_avatar(self):
+        pic = get_avatar('F', False)
+        self.assertIsNotNone(pic)
+        self.assertEqual(pic, "4ce4a9bd31646c9d05c0226c2df0d2a3.png")
+
+    def test_create_avator(self):
+        data = create_avatar(self.new_data)
+        self.assertIsNotNone(data['avatar'])
+        print(data['avatar'])
 
 
 class AccountViewTest(TestCase):
