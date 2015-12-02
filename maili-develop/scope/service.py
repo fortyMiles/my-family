@@ -17,8 +17,9 @@ def create_one_scope(username, tag):
     '''
     scope_name = get_scope_name(username, tag)
     feed_group = Scope(scope=scope_name, owner=username, tag=tag)
-    home_id = get_home_id(username)
-    create_home_group(username, home_id)
+    if tag == HOME:
+        # set scope_name to this home group's id
+        create_home_group(username, scope_name)
     feed_group.save()
 
 
