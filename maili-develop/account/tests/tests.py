@@ -69,7 +69,7 @@ class AccountViewTest(TestCase):
     '''
 
     def setUp(self):
-        self.name = '18868103391'
+        self.name = '15557453391'
         self.password = 'miffy31415926'
         self.first_name = u'高'
         self.gender = 'M'
@@ -102,7 +102,6 @@ class AccountViewTest(TestCase):
     def test_register(self):
 
         import_users.read_user_infor_from_file(self.client)
-        '''
         user = User.objects.filter(phone=self.name)
         self.assertEqual(len(user), 0)
 
@@ -112,7 +111,6 @@ class AccountViewTest(TestCase):
         self.assertEqual(data['status'], '202')
         user = User.objects.filter(phone=self.name)
         self.assertEqual(len(user), 1)
-        '''
         scope_set = Scope.objects.filter(owner='18868103391')
         for s in scope_set:
             print s.scope
