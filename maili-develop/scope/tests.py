@@ -122,6 +122,5 @@ class TestScopeService(TestCase):
         self.assertIsNotNone(data)
 
         friends_information = get_friend_information(data)
-        import pdb; pdb.set_trace()
         print friends_information
         self.assertIsNotNone(friends_information)

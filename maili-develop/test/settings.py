@@ -44,7 +44,6 @@ INSTALLED_APPS = (
     'feed',
     'relation',
     'scope',
-    'django_nose',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,6 +86,7 @@ test_db = {
     'NAME': 'test_db'
 }
 
+print('User DB sqlite3')
 
 DATABASES = {
     'default': test_db
@@ -140,10 +140,3 @@ LOGGING = {
     }
 }
 
-# Use nose to run all tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-# Tell nose to measure coverage on the 'foo' and 'bar' apps
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-package=foo,bar',
-]
