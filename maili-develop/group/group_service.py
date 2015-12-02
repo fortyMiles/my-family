@@ -13,9 +13,11 @@ def group_exist(group_name):
     else:
         return False
 
+
 def create_home_group(creator, home_id):
     group = Group(name=home_id, creator=creator, type='H')
     group.save()
+
 
 def create_group(creator, category='H'):
     group_name = create_group_name(creator)
