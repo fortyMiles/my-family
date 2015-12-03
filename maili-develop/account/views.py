@@ -269,7 +269,8 @@ class UserAccount(APIView):
         """
         try:
             request.POST._mutable = True
-            update_user(data=request.data)
+            post_data = request.data.copy()
+            update_user(data=post_data)
             return Response({'status': '202'})
         except Exception as e:
             print e
