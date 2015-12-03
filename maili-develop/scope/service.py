@@ -28,7 +28,7 @@ def get_scope_name(username, tag):
     '''
     Based on username and tag, gives a unique scope name
     '''
-    length = 8
+    length = 13
     time_length = 5
     identity = username[length * (-1):]
     assic = str(ord(tag[-1]))
@@ -106,30 +106,38 @@ def get_home_member(user):
     return user_json
 
 
-def get_scope_id(user, tag):
-    scope_name = Scope.objects.filter(owner=user).filter(tag=tag)[0].scope
-    return scope_name
+def _get_scope_id(user, tag):
+    scope_list = []
+    initial_scope = Scope.objects.filter(owner=user).filter(tag=tag)[0].scope
+    scope_list.append(initial_scope)
+
+    invite_scope = ScopeGroup.objects.filter(member=user).filter(tag=tag)
+
+    for s in invite_scope:
+        scope_list.append(s.scope)
+
+    return scope_list
 
 
 def get_home_id(user):
     '''
     Gets the person's hoem id, for group chatting.
     '''
-    return get_scope_name(user, HOME)
+    return _get_scope_id(user, HOME)
 
 
 def get_relation_id(user):
     '''
     Gets the person's group id, for feed.
     '''
-    return get_scope_name(user, RELATION)
+    return _get_scope_id(user, RELATION)
 
 
 def get_global_id(user):
     '''
     Gets the person's global friend id, for feed.
     '''
-    return get_scope_name(user, FRIEND)
+    return _get_scope_id(user, FRIEND)
 
 
 def get_all_join_scope(username):
@@ -143,13 +151,30 @@ def get_all_join_scope(username):
         scope_list.append(query.scope)
 
     home_scope = get_home_id(username)
-    relation_scope = get_relation_id(username)
-    friend_scope = get_global_id(username)
+    for s in home_scope:
+        scope_list.append(s)
 
-    scope_list.append(home_scope)
-    scope_list.append(relation_scope)
-    scope_list.append(friend_scope)
+    relation_scope = get_relation_id(username)
+    for s in relation_scope:
+        scope_list.append(s)
+
+    friend_scope = get_global_id(username)
+    for s in friend_scope:
+        scope_list.append(s)
 
     # import pdb; pdb.set_trace()
     # json_data = json.dumps(scope_list)
     return scope_list
+
+
+def get_home_creator(home_id):
+    """
+    Based on the home_id give home's info. Including home's creator,
+    creator's avator, home member.
+    """
+    query_set = Scope.objects.filter(scope=home_id)
+    if len(query_set) > 0:
+        creator = query_set[0].owner
+    else:
+        creator = None
+    return creator

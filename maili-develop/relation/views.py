@@ -15,6 +15,7 @@ from scope.service import get_home_id
 from scope.service import get_relation_id
 from scope.service import get_global_id
 from scope.service import get_all_join_scope
+from scope.service import get_home_creator
 
 
 class Relation(APIView):
@@ -206,6 +207,24 @@ def get_all_invole_scope(request, name):
         return Response({
             'status': status.HTTP_200_OK,
             'id': _id_list
+        })
+    except Exception as e:
+        print e
+        return Response({'status': status.HTTP_400_BAD_REQUEST})
+
+
+@api_view(['GET'])
+def home_creator(request, home_id):
+    """
+    Get home's creator based on home_id.
+    If no this home, return None
+    """
+
+    try:
+        creator = get_home_creator(home_id)
+        return Response({
+            'status': status.HTTP_200_OK,
+            'creator': creator
         })
     except Exception as e:
         print e
