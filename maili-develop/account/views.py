@@ -208,6 +208,8 @@ class UserAccount(APIView):
         """
 
         try:
+            request.POST._mutable = True
+            post_data = request.data.copy()
             create_new_user(data=request.data)
             return Response({'status': '202'})
         except Exception as e:
