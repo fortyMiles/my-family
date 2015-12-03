@@ -103,9 +103,27 @@ def get_home_member(user):
     return user_json
 
 
+def get_scope_id(user, tag):
+    scope_name = Scope.objects.filter(owner=user).filter(tag=tag)[0].scope
+    return scope_name
+
+
 def get_home_id(user):
     '''
     Gets the person's hoem id, for group chatting.
     '''
-    scope_name = Scope.objects.filter(owner=user).filter(tag=HOME)[0].scope
-    return scope_name
+    return get_scope_name(user, HOME)
+
+
+def get_relation_id(user):
+    '''
+    Gets the person's group id, for feed.
+    '''
+    return get_scope_name(user, RELATION)
+
+
+def get_global_id(user):
+    '''
+    Gets the person's global friend id, for feed.
+    '''
+    return get_scope_name(user, FRIEND)
