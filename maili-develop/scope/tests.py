@@ -3,6 +3,7 @@ from django.test import TestCase
 from scope.service import update_user_scope
 from scope.service import update_scope_group
 from scope.service import get_home_member
+from scope.service import get_all_join_scope
 from scope.models import ScopeGroup
 from scope.models import Scope
 from account.tests import import_users
@@ -124,3 +125,18 @@ class TestScopeService(TestCase):
         friends_information = get_friend_information(data)
         print friends_information
         self.assertIsNotNone(friends_information)
+
+    def test_get_involved_group(self):
+        user1 = '18868103391'
+        user2 = '17862710056'
+        scope = 'H'
+        relation = '姐姐'
+
+        create_relation(user1, user2, relation, 'test')
+        update_user_scope(user1, user2, scope, relation)
+
+        scope_list = get_all_join_scope(user1)
+        self.assertEqual(len(scope_list), 4)
+
+        scope_list = get_all_join_scope(user2)
+        self.assertEqual(len(scope_list), 4)

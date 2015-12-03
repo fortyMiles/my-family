@@ -42,6 +42,12 @@ def check_args(user1, user2, relation):
 
 
 def create_relation(user1, user2, relation, nickname):
+    """
+    Based on user1 and user2's name and relation of them, create a relation.
+    This is for RELTATION, it means, if A and B is sister. They could be in a
+    home and maybe in another home. But SISTER relation will be built first.
+    """
+
     abbr = RelationValue.objects.filter(title=relation)[0].abbr
 
     new_relation = Relationship(

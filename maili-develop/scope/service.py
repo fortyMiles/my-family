@@ -4,6 +4,7 @@ from relation.service import is_close_family_member
 from group.group_service import create_home_group
 from group.group_service import join_to_group
 import time
+import json
 
 FRIEND = 'friend'
 HOME = 'home'
@@ -51,6 +52,8 @@ def update_user_scope(user1, user2, scope, relation):
     e.g
       user1 = 'BigHeadSon', user2 = 'HisMother', socpe = 'home'
       then add HisMother to BigHeadSon's Home Socpe Group
+
+    Before update user scope, the two persons need already have realtion.
     '''
     scope_dict = {
         'H': HOME,
@@ -127,3 +130,26 @@ def get_global_id(user):
     Gets the person's global friend id, for feed.
     '''
     return get_scope_name(user, FRIEND)
+
+
+def get_all_join_scope(username):
+    '''
+    Get all involved scopes.
+    Including his intital three scoeps and other involeved groups;
+    '''
+    query_set = ScopeGroup.objects.filter(member=username)
+    scope_list = []
+    for query in query_set:
+        scope_list.append(query.scope)
+
+    home_scope = get_home_id(username)
+    relation_scope = get_relation_id(username)
+    friend_scope = get_global_id(username)
+
+    scope_list.append(home_scope)
+    scope_list.append(relation_scope)
+    scope_list.append(friend_scope)
+
+    # import pdb; pdb.set_trace()
+    # json_data = json.dumps(scope_list)
+    return scope_list

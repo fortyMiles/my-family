@@ -35,6 +35,7 @@ def check_user_exist(username):
 
 
 def update_user(data):
+    import pdb; pdb.set_trace()
     data = create_avatar(data)
     user = User.objects.get(phone=data['phone'])
     serializer = UserSerializer(user, data=data)
@@ -71,6 +72,14 @@ def get_avatar(gender, married):
     from account.configuration.picture import AVATAR
 
     picture = None
+    import pdb;pdb.set_trace()
+
+    married = married.lower()
+
+    if married == 'false':
+        married = False
+    elif married == 'true':
+        married = True
 
     if gender in AVATAR and married in AVATAR[gender]:
         picture = AVATAR[gender][married]

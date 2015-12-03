@@ -12,6 +12,9 @@ from relation.service import get_friend_information
 from scope.service import update_user_scope
 from scope.service import get_home_member
 from scope.service import get_home_id
+from scope.service import get_relation_id
+from scope.service import get_global_id
+from scope.service import get_all_join_scope
 
 
 class Relation(APIView):
@@ -37,8 +40,10 @@ class Relation(APIView):
             "user1": varchar(), // user1 is 小明
             "user2": varchar(), // user2 is his mother
             "relation": varchar() // relation is 母亲
-            "scope": <F, H, R> // if this person is your family, send H, means Home
-            // if is other relations, send R, means Relation. If this person is your friend, not
+            "scope": <F, H, R>
+            // if this person is your family, send H, means Home
+            // if is other relations, send R, means Relation.
+            //If this person is your friend, not
             // your any relation but is your friend. send F, means Friend
             "nickname": nickname  // required == false
             }
@@ -147,6 +152,9 @@ def home_member_list(request, name):
 
 @api_view(['GET'])
 def catch_home_id(request, name):
+    """
+    When send feed to 'home only.' you need to get this scope id.
+    """
     try:
         home_id = get_home_id(name)
         return Response({
@@ -156,3 +164,48 @@ def catch_home_id(request, name):
         print e
         return Response({'status': status.HTTP_400_BAD_REQUEST})
 
+
+@api_view(['GET'])
+def catch_relation_id(request, name):
+    """
+    When send feed to 'all relation.' you need to get this scope id.
+    """
+    try:
+        _id = get_relation_id(name)
+        return Response({
+            'status': status.HTTP_200_OK,
+            'id': _id})
+    except Exception as e:
+        print e
+        return Response({'status': status.HTTP_400_BAD_REQUEST})
+
+
+@api_view(['GET'])
+def catch_global_id(request, name):
+    """
+    When send feed to 'all friend.' you need to get this scope id.
+    """
+    try:
+        _id = get_global_id(name)
+        return Response({
+            'status': status.HTTP_200_OK,
+            'id': _id})
+    except Exception as e:
+        print e
+        return Response({'status': status.HTTP_400_BAD_REQUEST})
+
+
+def get_all_invole_scope(request, name):
+    """
+    Gets all involved scopes. Including the initial three scopes and
+    other involved groups.
+    """
+    try:
+        _id_list = get_all_join_scope(name)
+        return Response({
+            'status': status.HTTP_200_OK,
+            'id': _id_list
+        })
+    except Exception as e:
+        print e
+        return Response({'status': status.HTTP_400_BAD_REQUEST})

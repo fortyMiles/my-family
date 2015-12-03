@@ -268,6 +268,7 @@ class UserAccount(APIView):
           paramType: form
         """
         try:
+            request.POST._mutable = True
             update_user(data=request.data)
             return Response({'status': '202'})
         except Exception as e:
