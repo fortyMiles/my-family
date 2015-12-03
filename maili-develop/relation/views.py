@@ -195,6 +195,7 @@ def catch_global_id(request, name):
         return Response({'status': status.HTTP_400_BAD_REQUEST})
 
 
+@api_view(['GET'])
 def get_all_invole_scope(request, name):
     """
     Gets all involved scopes. Including the initial three scopes and
