@@ -7,4 +7,5 @@ class ContractSerilizer(serializers.ModelSerializer):
         model = Contract
         fields = ('friend_name', 'friend_phone',
                   'remark_name', 'first_char',
-                  'remark_tags', 'relation')
+                  'remark_tags', 'relation',
+                  'avatar')

@@ -72,7 +72,10 @@ def get_avatar(gender, married):
 
     picture = None
 
-    married = married.lower()
+    try:
+        married = married.lower()
+    except Exception as e:
+        print e
 
     if married == 'false':
         married = False

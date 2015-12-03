@@ -20,6 +20,7 @@ class Relationship(models.Model):
     nickname = models.CharField(max_length=15, blank=True)
     create_at = models.DateTimeField(auto_now_add=True)
 
+
 class Contract(models.Model):
     ''' 朋友，也即通讯录 '''
     user_id = models.UUIDField(db_index=True)  # 谁的通讯录
@@ -34,6 +35,7 @@ class Contract(models.Model):
     unread_msgs = models.IntegerField(default=0)  # 几条未读消息
     deleted = models.BooleanField(default=False)
     relation = models.CharField(max_length=40, default='friend')  # 关系<朋友，姐姐，妹妹等>
+    avatar = models.CharField(max_length=40, default='/avatar.png')
 
     class Meta:
         db_table = "contract"

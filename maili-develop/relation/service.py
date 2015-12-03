@@ -101,7 +101,7 @@ def update_contract_list(user1, user2, relation, nickname):
         user_id=user_id, friend_id=friend_id,
         friend_name=friend.nickname,
         friend_phone=user2, remark_name=relation, first_char='C',
-        remark_tags=relation, relation=relation)
+        remark_tags=relation, relation=relation, avatar=friend.avatar)
 
     friendship.save()
 
