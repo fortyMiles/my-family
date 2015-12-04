@@ -153,3 +153,15 @@ def get_friend_information(phone_number_list):
     contract_set = Contract.objects.filter(friend_phone__in=phone_number_list)
     serializer = ContractSerilizer(contract_set, many=True)
     return serializer.data
+
+
+def get_chinese_relation(user1, user2):
+    q = Relationship.objects.filter(user_from=user1).filter(user_to=user2)
+    if user1 == user2:
+        chinese_title = 'self'
+    elif len(q) > 0:
+        relation_abbr = q[0].relation
+        chinese_title = RelationValue.objects.filter(abbr=relation_abbr)[0].title
+    else:
+        chinese_title = 'not existed'
+    return chinese_title

@@ -16,6 +16,7 @@ from scope.service import get_relation_id
 from scope.service import get_global_id
 from scope.service import get_all_join_scope
 from scope.service import get_home_creator
+from relation.service import get_chinese_relation
 
 
 class Relation(APIView):
@@ -225,6 +226,28 @@ def home_creator(request, home_id):
         return Response({
             'status': status.HTTP_200_OK,
             'creator': creator
+        })
+    except Exception as e:
+        print e
+        return Response({'status': status.HTTP_400_BAD_REQUEST})
+
+
+@api_view(['GET'])
+def get_chinese_relation_name(request, user1, user2):
+    """
+    Gets what user1 called user2 in Chinese
+
+    Response:
+
+        {'status': Http status,
+        'title': string
+        }
+    """
+    try:
+        title = get_chinese_relation(user1, user2)
+        return Response({
+            'status': status.HTTP_200_OK,
+            'title': title
         })
     except Exception as e:
         print e

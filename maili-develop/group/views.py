@@ -1,13 +1,17 @@
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from rest_framework.views import APIView
-
 from group.models import Group
 from group.group_service import group_exist
 from group.group_service import create_group
 from group.group_service import join_to_group
 from group.group_service import get_member_joined_groups
+from group.group_service import get_home_info
+from group.group_service import get_join_home_info
 from group.serializers import GroupSerializer
+from scope.service import get_home_id
+from relation.service import get_chinese_relation
 # Create your views here.
 
 
@@ -128,3 +132,25 @@ class GroupAPI(APIView):
         group = self.get_object(name)
         group.delete()
         return Response({'status': status.HTTP_204_NO_CONTENT})
+
+
+@api_view(['GET'])
+def join_home_info(request, name):
+    """
+    Gets a person joined homes info.
+
+    Response:
+
+        {'id': home_id,
+        'avatar': home_avatar,
+        'nickanme': nickname of this home creator
+        }
+    """
+
+    home_list = get_home_id(name)
+    if len(home_list) > 0:
+        data = get_join_home_info(name, home_list)
+    else:
+        data = None
+
+    return Response({'data': data})

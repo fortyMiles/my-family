@@ -12,6 +12,13 @@ class GroupSerializer(serializers.ModelSerializer):
                  'member_number', 'slogen', 'type')
 
 
+class HomeInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        fields = ('name', 'creator')
+
+
 class JoinedGroupsSerializer(serializers.ModelSerializer):
 
     class Meta:

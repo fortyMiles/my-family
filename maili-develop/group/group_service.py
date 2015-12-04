@@ -1,9 +1,29 @@
 from group.models import Group
 from group.models import UserGroups
-from account.models import User
-from group.serializers import GroupSerializer
+from group.serializers import HomeInfoSerializer
 from group.serializers import JoinedGroupsSerializer
+from group.conf import default_home_pic
+from relation.service import get_chinese_relation
 import time
+
+
+def get_join_home_info(username, home_list):
+    data_list = []
+    for home in home_list:
+        data = get_home_info(home)
+        temp = {}
+        temp['id'] = home
+        temp['avatar'] = '2211f3027e6e682361c552cd6c721e08.png'
+        temp['nickname'] = get_chinese_relation(username, data['creator'])
+        data_list.append(temp)
+    return data_list
+
+def get_home_info(group_id):
+    home = Group.objects.filter(name=group_id)[0]
+    serializer = HomeInfoSerializer(home)
+    data = serializer.data
+    return data
+
 
 
 def group_exist(group_name):
