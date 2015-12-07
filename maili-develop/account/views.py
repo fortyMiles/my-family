@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from account.models import User
 from account.utility import send_message
+from account.utility import generate_token
 from .service import check_user_exist
 from .service import update_user
 from .service import create_new_user
@@ -58,12 +59,14 @@ def user_login(request):
     """
     # import pdb; pdb.set_trace()
     if request.method == 'POST':
-        phone = request.data['phone']
+        phone = request.data['phone'].strip()
         password = request.data['password']
 
         try:
             set_user_login(account=phone, password=password)
-            return Response({'status': status.HTTP_202_ACCEPTED})
+            token = generate_token.generate_token(phone)
+            return Response({'status': status.HTTP_202_ACCEPTED,
+                             'token': token})
         except NameError as e:
             print e
             return Response({'status': status.HTTP_401_UNAUTHORIZED})
