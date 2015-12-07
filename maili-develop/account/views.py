@@ -5,11 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from account.models import User
 from account.utility import send_message
-from account.utility import send_binary
 from .service import check_user_exist
 from .service import update_user
 from .service import create_new_user
 from .service import get_user_info
+from .service import set_user_login
+from .service import save_file
 
 # Create your views here.
 
@@ -22,6 +23,8 @@ PUT = 'PUT'
 def user_login(request):
     """
     receives post request and login user.
+
+    [Notice], Must send password's MD5 code.
 
     args:
 
@@ -57,12 +60,16 @@ def user_login(request):
     if request.method == 'POST':
         phone = request.data['phone']
         password = request.data['password']
-        user_set = User.objects.filter(phone=phone).filter(password=password)
-        if user_set:
-            user_set[0].is_login = True
+
+        try:
+            set_user_login(account=phone, password=password)
             return Response({'status': status.HTTP_202_ACCEPTED})
-        else:
+        except NameError as e:
+            print e
             return Response({'status': status.HTTP_401_UNAUTHORIZED})
+        except Exception as e:
+            print e
+            return Response({'status': status.HTTP_400_BAD_REQUEST})
 
 
 @api_view([POST])
@@ -210,7 +217,7 @@ class UserAccount(APIView):
         try:
             request.POST._mutable = True
             post_data = request.data.copy()
-            create_new_user(data=request.data)
+            create_new_user(data=post_data)
             return Response({'status': '202'})
         except Exception as e:
             print e
@@ -325,18 +332,15 @@ class Avator(APIView):
           parameType: form
         """
 
-        user_set = User.object.filter(phone=user_name)
         binary_data = request.data.get('photo', None)
 
-        if user_set and binary_data:
-            photo_url = send_binary.FileSender.send_file(binary_data)
-            user = user_set[0]
-            user.avator = photo_url
-            user.save()
+        try:
+            photo_url = save_file(binary_data)
+            set_user_login(user_name, photo_url)
             return Response(
                 {'status': status.HTTP_202_ACCEPTED, 'url': photo_url}
             )
-        elif not user_set:
+        except KeyError:
             return Response({'status': status.HTTP_404_NOT_FOUND})
-        else:
+        except ValueError:
             return Response({'status': status.HTTP_400_BAD_REQUEST})

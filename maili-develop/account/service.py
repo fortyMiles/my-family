@@ -2,6 +2,20 @@ from account.models import User
 from .serializers import UserSerializer
 from feed.service import create_default_feed_group
 from scope.service import create_default_scope
+from account.utility import send_binary
+
+
+def set_user_login(account, password):
+    """
+    Sets one user to login status.
+    @raise{NameError} if the account or password is error. Raise Name Error
+    """
+    account = account.strip()
+    user_set = User.objects.filter(phone=account).filter(password=password)
+    if user_set:
+        user_set[0].is_login = True
+    else:
+        raise NameError
 
 
 def get_user(phone_number):
@@ -86,6 +100,28 @@ def get_avatar(gender, married):
         picture = AVATAR[gender][married]
     else:
         picture = AVATAR['U']
-
-
     return picture
+
+
+def set_user_avatar(account, photo_url):
+    account = account.strip()
+    user_set = User.object.filter(phone=account)
+    if len(user_set) > 0:
+        user = user_set[0]
+        user.avator = photo_url
+        user.save()
+    else:
+        raise KeyError
+
+
+def save_file(binary_data):
+    '''
+    Saves file into file server.
+
+    @Return{String} file url
+    '''
+    if not binary_data:
+        raise ValueError
+
+    photo_url = send_binary.FileSender.send_file(binary_data)
+    return photo_url
