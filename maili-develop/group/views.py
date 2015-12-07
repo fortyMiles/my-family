@@ -146,11 +146,9 @@ def join_home_info(request, name):
         'nickanme': nickname of this home creator
         }
     """
-
-    home_list = get_home_id(name)
-    if len(home_list) > 0:
+    try:
+        home_list = get_home_id(name)
         data = get_join_home_info(name, home_list)
-    else:
-        data = None
-
-    return Response({'data': data})
+        return Response({'status': 200, 'data': data})
+    except Exception:
+        return Response({'status': 400})
