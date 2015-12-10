@@ -156,12 +156,19 @@ def home_member_list(request, name):
 def catch_home_id(request, name):
     """
     When send feed to 'home only.' you need to get this scope id.
+
+    Response:
+
+        {
+            status: String,
+            id: String
+        }
     """
     try:
         home_id = get_home_id(name)
         return Response({
             'status': status.HTTP_200_OK,
-            'home_id': home_id})
+            'id': home_id})
     except Exception as e:
         print e
         return Response({'status': status.HTTP_400_BAD_REQUEST})
@@ -171,6 +178,13 @@ def catch_home_id(request, name):
 def catch_relation_id(request, name):
     """
     When send feed to 'all relation.' you need to get this scope id.
+
+    Response:
+
+        {
+            status: String,
+            id: String
+        }
     """
     try:
         _id = get_relation_id(name)
@@ -186,6 +200,13 @@ def catch_relation_id(request, name):
 def catch_global_id(request, name):
     """
     When send feed to 'all friend.' you need to get this scope id.
+
+    Response:
+
+        {
+            status: String,
+            id: String
+        }
     """
     try:
         _id = get_global_id(name)
