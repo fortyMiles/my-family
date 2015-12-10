@@ -30,7 +30,7 @@ class MainHandler(tornado.web.RequestHandler):
             </html>
                 """
         )
-        
+
 
 class FileDownloadHandler(tornado.web.RequestHandler):
     def get(self, file_name):
@@ -66,7 +66,7 @@ class FileHandler(tornado.web.RequestHandler):
     def post(self):
         # receives a posted file, and saves it.
         conf={}
-        upload_path=os.path.join(os.path.dirname(__file__),'files') 
+        upload_path=os.path.join(os.path.dirname(__file__),'files')
         file_metas = self.request.files['file']
         file_name = None
         for meta in file_metas:
@@ -78,11 +78,12 @@ class FileHandler(tornado.web.RequestHandler):
 
             with open(file_saved_path, 'wb') as up:
                 up.write(body)
-            
+
             file_extension = imghdr.what(file_saved_path)
             os.rename(file_saved_path, file_saved_path + '.' + file_extension)
 
-            conf[file_name] = data_md5 + '.' + file_extension
+            conf['name'] = data_md5 + '.' + file_extension
+            conf['previous'] = file_name
 
         self.write(conf)
 
@@ -104,5 +105,6 @@ application = tornado.web.Application([
 
 
 if __name__ == "__main__":
-    application.listen(8888)
+    application.listen(8777)
+    print('start....')
     tornado.ioloop.IOLoop.instance().start()
