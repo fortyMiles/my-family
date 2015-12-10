@@ -116,7 +116,10 @@ def _get_scope_id(user, tag):
     for s in invite_scope:
         scope_list.append(s.scope)
 
-    return scope_list
+    if tag == HOME:
+        return scope_list
+    else:
+        return scope_list[0]
 
 
 def get_home_id(user):
