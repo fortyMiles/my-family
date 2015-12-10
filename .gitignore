@@ -46,3 +46,6 @@ media
 
 .ropeproject/
 
+#File
+
+file-server/files/*
