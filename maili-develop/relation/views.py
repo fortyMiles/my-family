@@ -100,15 +100,15 @@ class Relation(APIView):
         user2_exist = check_user_exist(user2)
 
         if not user1_exist or not user2_exist:
-            return Response({'status': status.HTTP_404_NOT_FOUND})
+            return Response(status=status.HTTP_404_NOT_FOUND)
         elif check_relation_exist(user1, user2):
-            return Response({'status': status.HTTP_409_CONFLICT})
+            return Response(status=status.HTTP_409_CONFLICT)
         elif not check_relation_accept(relation):
-            return Response({'status': status.HTTP_406_NOT_ACCEPTABLE})
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             create_relation(user1, user2, relation, nickname)
             update_user_scope(user1, user2, scope, relation)
-            return Response({'status': status.HTTP_201_CREATED})
+            return Response(status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])
@@ -122,7 +122,7 @@ def contract_list(request, name):
                          'data': data})
     except Exception as e:
         print e
-        return Response({'status': status.HTTP_400_BAD_REQUEST})
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -149,7 +149,7 @@ def home_member_list(request, name):
             'home_id': home_id})
     except Exception as e:
         print e
-        return Response({'status': status.HTTP_400_BAD_REQUEST})
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -171,7 +171,7 @@ def catch_home_id(request, name):
             'id': home_id})
     except Exception as e:
         print e
-        return Response({'status': status.HTTP_400_BAD_REQUEST})
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -193,7 +193,7 @@ def catch_relation_id(request, name):
             'id': _id})
     except Exception as e:
         print e
-        return Response({'status': status.HTTP_400_BAD_REQUEST})
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -215,7 +215,7 @@ def catch_global_id(request, name):
             'id': _id})
     except Exception as e:
         print e
-        return Response({'status': status.HTTP_400_BAD_REQUEST})
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -232,7 +232,7 @@ def get_all_invole_scope(request, name):
         })
     except Exception as e:
         print e
-        return Response({'status': status.HTTP_400_BAD_REQUEST})
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -250,7 +250,7 @@ def home_creator(request, home_id):
         })
     except Exception as e:
         print e
-        return Response({'status': status.HTTP_400_BAD_REQUEST})
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -267,9 +267,8 @@ def get_chinese_relation_name(request, user1, user2):
     try:
         title = get_chinese_relation(user1, user2)
         return Response({
-            'status': status.HTTP_200_OK,
             'title': title
         })
     except Exception as e:
         print e
-        return Response({'status': status.HTTP_400_BAD_REQUEST})
+        return Response(status=status.HTTP_404_NOT_FOUND)
