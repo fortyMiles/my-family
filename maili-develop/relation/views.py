@@ -30,11 +30,11 @@ class Relation(APIView):
         Create a relation between two person.
 
         Support Type List:
-        (
+            (
             妻子 丈夫 儿子 女儿 弟弟 哥哥 妹妹 姐姐 父亲 母亲
             孙子 孙女 女婿 媳妇 爷爷 奶奶 岳父 岳母 公公 婆婆
             朋友
-        )
+            )
 
         ata:
 
@@ -59,35 +59,35 @@ class Relation(APIView):
 
         ---
         parameters:
-        - name: user1
-          description: user1 is 小明
-          required: true
-          type: string
-          paramters: form
+            - name: user1
+            description: user1 is 小明
+            required: true
+            type: string
+            paramters: form
 
         - name: user2
-          description: user1 is 妈妈
-          required: true
-          type: string
-          paramters: form
+        description: user1 is 妈妈
+        required: true
+        type: string
+        paramters: form
 
         - name: relation
-          description: relation is 母亲
-          required: true
-          type: string
-          paramters: form
+        description: relation is 母亲
+        required: true
+        type: string
+        paramters: form
 
         - name: nickname
-          description: nickname is 围裙妈妈
-          required: false
-          type: string
-          paramters: form
+        description: nickname is 围裙妈妈
+        required: false
+        type: string
+        paramters: form
 
         - name: scope
-          description: scope is H
-          required: true
-          type: string
-          parameters: form
+        description: scope is H
+        required: true
+        type: string
+        parameters: form
         """
 
         user1 = request.data.get('user1', None)
@@ -118,8 +118,7 @@ def contract_list(request, name):
     """
     try:
         data = get_contract(user_account=name)
-        return Response({'status': status.HTTP_200_OK,
-                         'data': data})
+        return Response({'data': data})
     except Exception as e:
         print e
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -144,7 +143,6 @@ def home_member_list(request, name):
         data = get_friend_information(home_member)
         home_id = get_home_id(name)
         return Response({
-            'status': status.HTTP_200_OK,
             'data': data,
             'home_id': home_id})
     except Exception as e:
@@ -160,14 +158,14 @@ def catch_home_id(request, name):
     Response:
 
         {
-            status: String,
-            id: String
+        status: String,
+        id: String
         }
-    """
+        """
+
     try:
         home_id = get_home_id(name)
         return Response({
-            'status': status.HTTP_200_OK,
             'id': home_id})
     except Exception as e:
         print e
@@ -182,14 +180,14 @@ def catch_relation_id(request, name):
     Response:
 
         {
-            status: String,
-            id: String
+        status: String,
+        id: String
         }
-    """
+        """
+
     try:
         _id = get_relation_id(name)
         return Response({
-            'status': status.HTTP_200_OK,
             'id': _id})
     except Exception as e:
         print e
@@ -204,14 +202,14 @@ def catch_global_id(request, name):
     Response:
 
         {
-            status: String,
-            id: String
+        status: String,
+        id: String
         }
-    """
+        """
+
     try:
         _id = get_global_id(name)
         return Response({
-            'status': status.HTTP_200_OK,
             'id': _id})
     except Exception as e:
         print e
@@ -227,7 +225,6 @@ def get_all_invole_scope(request, name):
     try:
         _id_list = get_all_join_scope(name)
         return Response({
-            'status': status.HTTP_200_OK,
             'id': _id_list
         })
     except Exception as e:
@@ -245,7 +242,6 @@ def home_creator(request, home_id):
     try:
         creator = get_home_creator(home_id)
         return Response({
-            'status': status.HTTP_200_OK,
             'creator': creator
         })
     except Exception as e:

@@ -65,14 +65,16 @@ def user_login(request):
         try:
             set_user_login(account=phone, password=password)
             token = generate_token.generate_token(phone)
-            return Response({'status': status.HTTP_202_ACCEPTED,
-                             'token': token})
+            return Response(
+                status=status.HTTP_202_ACCEPTED,
+                content={'token': token}
+            )
         except NameError as e:
             print e
-            return Response({'status': status.HTTP_401_UNAUTHORIZED})
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             print e
-            return Response({'status': status.HTTP_400_BAD_REQUEST})
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view([POST])
@@ -107,15 +109,15 @@ def get_verification_code(request):
     code = send_message.random_code(phone)
     success = send_message.send_message(phone, code)
 
-    context = {"status": None, "code": None}
+    context = {"code": None}
 
     if success:
-        context['status'] = status.HTTP_200_OK
+        resp_status = status.HTTP_200_OK
         context['code'] = code
     else:
-        context['status'] = status.HTTP_408_REQUEST_TIMEOUT
+        resp_status = status.HTTP_408_REQUEST_TIMEOUT
 
-    return Response(context)
+    return Response(context, status=resp_status)
 
 
 @api_view([GET])
@@ -152,9 +154,9 @@ def get_user(request, username):
     data = get_user_info(username)
 
     if data:
-        return Response({'status': 200, 'data': data})
+        return Response({'data': data}, status=200)
     else:
-        return Response({'status': 404})
+        return Response(status=404)
 
 
 class UserAccount(APIView):
@@ -221,10 +223,10 @@ class UserAccount(APIView):
             request.POST._mutable = True
             post_data = request.data.copy()
             create_new_user(data=post_data)
-            return Response({'status': '202'})
+            return Response(status=202)
         except Exception as e:
             print e
-            return Response({'status': '409'})
+            return Response(status=409)
 
     def put(self, request):
         """
@@ -283,10 +285,10 @@ class UserAccount(APIView):
             request.POST._mutable = True
             post_data = request.data.copy()
             update_user(data=post_data)
-            return Response({'status': '202'})
+            return Response(status=202)
         except Exception as e:
             print e
-            return Response({'status': '407'})
+            return Response(status=407)
 
 
 class Avator(APIView):
@@ -306,9 +308,9 @@ class Avator(APIView):
         if user_set:
             user = user_set[0]
             photo_url = user.avator
-            return Response({'status': status.HTTP_200_OK, 'url': photo_url})
+            return Response({'url': photo_url}, status=status.HTTP_200_OK)
         else:
-            return Response({'status': status.HTTP_404_NOT_FOUND})
+            return Response(status=404)
 
     def post(self, request, user_name):
         """
@@ -341,9 +343,10 @@ class Avator(APIView):
             photo_url = save_file(binary_data)
             set_user_login(user_name, photo_url)
             return Response(
-                {'status': status.HTTP_202_ACCEPTED, 'url': photo_url}
+                {'url': photo_url},
+                status=202
             )
         except KeyError:
-            return Response({'status': status.HTTP_404_NOT_FOUND})
+            return Response(status=status.HTTP_404_NOT_FOUND)
         except ValueError:
-            return Response({'status': status.HTTP_400_BAD_REQUEST})
+            return Response(status=status.HTTP_400_BAD_REQUEST)
