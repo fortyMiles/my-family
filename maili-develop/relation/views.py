@@ -59,35 +59,35 @@ class Relation(APIView):
 
         ---
         parameters:
-            - name: user1
-            description: user1 is 小明
-            required: true
-            type: string
-            paramters: form
+        - name: user1
+          description: user1 is 小明
+          required: true
+          type: string
+          paramters: form
 
         - name: user2
-        description: user1 is 妈妈
-        required: true
-        type: string
-        paramters: form
+          description: user1 is 妈妈
+          required: true
+          type: string
+          paramters: form
 
         - name: relation
-        description: relation is 母亲
-        required: true
-        type: string
-        paramters: form
+          description: relation is 母亲
+          required: true
+          type: string
+          paramters: form
 
         - name: nickname
-        description: nickname is 围裙妈妈
-        required: false
-        type: string
-        paramters: form
+          description: nickname is 围裙妈妈
+          required: false
+          type: string
+          paramters: form
 
         - name: scope
-        description: scope is H
-        required: true
-        type: string
-        parameters: form
+          description: scope is H
+          required: true
+          type: string
+          parameters: form
         """
 
         user1 = request.data.get('user1', None)
@@ -116,6 +116,7 @@ def contract_list(request, name):
     """
     Gets one person's all friends in his/her contract.
     """
+
     try:
         data = get_contract(user_account=name)
         return Response({'data': data})
@@ -166,7 +167,8 @@ def catch_home_id(request, name):
     try:
         home_id = get_home_id(name)
         return Response({
-            'id': home_id})
+            'id': home_id
+        })
     except Exception as e:
         print e
         return Response(status=status.HTTP_404_NOT_FOUND)
