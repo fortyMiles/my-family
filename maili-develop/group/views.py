@@ -7,11 +7,9 @@ from group.group_service import group_exist
 from group.group_service import create_group
 from group.group_service import join_to_group
 from group.group_service import get_member_joined_groups
-from group.group_service import get_home_info
 from group.group_service import get_join_home_info
 from group.serializers import GroupSerializer
 from scope.service import get_home_id
-from relation.service import get_chinese_relation
 # Create your views here.
 
 
@@ -72,11 +70,13 @@ class Join(APIView):
 
         try:
             join_to_group(invitee, group_name)
-            return Response({'status': status.HTTP_201_CREATED,
-                             'group': group_name})
+            return Response(
+                {'group': group_name},
+                status=status.HTTP_201_CREATED,
+            )
         except Exception as e:
             print e
-            return Response({'status': status.HTTP_406_NOT_ACCEPTABLE})
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 class Member(APIView):
@@ -90,21 +90,24 @@ class Member(APIView):
         returns:
 
             {"status":http_status,
-             "data":[
-              {"group":"77414593144741054108"},
-              {"group":"77414593144741054674"},
-              {"group":"77414593144741055379"}
-              ]
+            "data":[
+            {"group":"77414593144741054108"},
+            {"group":"77414593144741054674"},
+            {"group":"77414593144741055379"}
+            ]
             }
-        '''
+            '''
 
         # import pdb; pdb.set_trace();
         try:
             results = get_member_joined_groups(name)
-            return Response({'status': status.HTTP_200_OK, 'data': results})
+            return Response(
+                {'data': results},
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             print e
-            return Response({'status': status.HTTP_404_NOT_FOUND})
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class GroupAPI(APIView):
@@ -123,15 +126,17 @@ class GroupAPI(APIView):
         serializer = GroupSerializer(group, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'status': status.HTTP_202_ACCEPTED,
-                             'data': serializer.data})
+            return Response(
+                {'data': serializer.data},
+                status=status.HTTP_202_ACCEPTED
+            )
 
-        return Response({'status': status.HTTP_406_NOT_ACCEPTABLE})
+        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
     def delete(self, request, name, format=None):
         group = self.get_object(name)
         group.delete()
-        return Response({'status': status.HTTP_204_NO_CONTENT})
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
@@ -149,6 +154,6 @@ def join_home_info(request, name):
     try:
         home_list = get_home_id(name)
         data = get_join_home_info(name, home_list)
-        return Response({'status': 200, 'data': data})
+        return Response({'data': data})
     except Exception:
-        return Response({'status': 400})
+        return Response(status=400)
