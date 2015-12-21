@@ -66,8 +66,8 @@ def user_login(request):
             set_user_login(account=phone, password=password)
             token = generate_token.generate_token(phone)
             return Response(
+                {'token': token},
                 status=status.HTTP_202_ACCEPTED,
-                content={'token': token}
             )
         except NameError as e:
             print e
